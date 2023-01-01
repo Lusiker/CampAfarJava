@@ -29,7 +29,7 @@ CREATE TABLE `question` (
   `question_title` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, #提问标题
   `question_detail` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '', #提问详情
   `question_tag` int(32) unsigned not null default '0', #问题标签，标签最多4个（0~63），通过数字形式存放00000000~63636363，每次取模100得到一个标签
-  `question_answered_at` timestamp NOT NULL DEFAULT NULL, #提问回答时间，为null时尚未回答
+  `question_answered_at` timestamp NULL DEFAULT NULL, #提问回答时间，为null时尚未回答
   `question_view_count` int unsigned not null default '0', #问题浏览次数
   `question_listen_price` decimal(7, 2) NOT NULL default '0.00', #旁听费用， 在回答创建时一并填写
   `answer_detail` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '尚未回答', # 富文本形式的回答
