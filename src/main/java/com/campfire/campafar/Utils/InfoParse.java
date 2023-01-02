@@ -1,0 +1,43 @@
+package com.campfire.campafar.Utils;
+
+/**
+ * InfoParser类存放与parsing相关的方法
+ * 在系统的主要位置，应当使用非基本数据类型以方便用判空方式处理错误
+ */
+public class InfoParse {
+    public static Integer parseInt(String intStr){
+        int result;
+
+        try{
+            result = Integer.parseInt(intStr);
+        }catch (Exception e){
+            return null;
+        }
+
+        return result;
+    }
+
+    public static Short parseShort(String shortStr){
+        short result;
+
+        try{
+            result = Short.parseShort(shortStr);
+        }catch (Exception e){
+            return null;
+        }
+
+        return result;
+    }
+
+    public static Boolean parseBoolean(String boolStr){
+        boolean result;
+
+        try{
+            result = Boolean.parseBoolean(boolStr);
+        }catch (Exception e){
+            return null;
+        }
+
+        return result;
+    }
+}
