@@ -4,7 +4,7 @@ package com.campfire.campafar.Utils;
  * InfoParser类存放与parsing相关的方法
  * 在系统的主要位置，应当使用非基本数据类型以方便用判空方式处理错误
  */
-public class InfoParse {
+public class InfoParser {
     public static Integer parseInt(String intStr){
         int result;
 
