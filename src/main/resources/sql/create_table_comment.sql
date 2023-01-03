@@ -8,5 +8,6 @@ create table comment (
     comment_detail varchar(255) NOT NULL DEFAULT '', #评论内容
     comment_created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP, #评论创建时间
     comment_state tinyint(2) unsigned DEFAULT 0, #评论状态，具体待定
-    comment_visible tinyint(1) DEFAULT '1' #评论可见性
+    comment_visible tinyint(1) DEFAULT '1', #评论可见性
+    comment_last_modifier timestamp null default null #评论上次修改时间
 );
