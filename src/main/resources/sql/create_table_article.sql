@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article`  (
   `user_id` int unsigned NOT NULL, #发布者uid
   `article_id` int unsigned NOT NULL AUTO_INCREMENT, #文章id
-  `article_title` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, #文章标题
+  `article_title` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, #文章标题
   `article_created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP, #文章创建时间
   `article_tag` int(32) unsigned not null default '0', #文章标签，标签最多4个（0~63），通过数字形式存放00000000~63636363，每次取模100得到一个标签
   `article_is_free` tinyint(1) NOT NULL, #文章是否免费
