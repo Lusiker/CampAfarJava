@@ -33,6 +33,7 @@ CREATE TABLE `article`  (
   `article_view_count` int unsigned not null default '0', #文章浏览次数
   `article_state` tinyint(2) DEFAULT '0', #文章状态，正常，已删除，审核中
   `article_visible` tinyint(1) DEFAULT '1', #文章可见性
+  `article_last_modified` timestamp null default null, #文章上次修改时间
   PRIMARY KEY (`article_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
