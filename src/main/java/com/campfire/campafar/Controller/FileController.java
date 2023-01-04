@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 
 @RestController
 public class FileController {
@@ -34,6 +33,11 @@ public class FileController {
     @RequestMapping("/upload/avatar")
     public String uploadAvatar(@RequestParam(value = "uid", defaultValue = "")String uidStr,
                                @RequestBody MultipartFile file) throws JsonProcessingException {
+        if(file == null) {
+            //文件参数为空
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
         double fileSize = file.getSize();
         double sizeAsMB = fileSize / 1024 / 1024;
         if(sizeAsMB > 2.0) {
@@ -69,6 +73,23 @@ public class FileController {
 
     @RequestMapping("/acquire/avatar")
     public String acquireAvatar(@RequestParam(value = "uid", defaultValue = "")String uidStr) throws JsonProcessingException {
-        return "";
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户名无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if(user == null){
+            //目标用户不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        String result = FileProcessor.getAvatarAsBase64(uid);
+        if(result == null) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, ""));
+        }
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, result));
     }
 }
