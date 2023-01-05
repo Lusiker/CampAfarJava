@@ -17,13 +17,14 @@
       </div>
       <div class="user-body">
         <div class="name">{{ user.userName }}</div>
+        <div class="email">{{user.userEmail}}</div>
         <div class="level">经验值：{{ user.userExp }}</div>
+
       </div>
       <div class="user-back">
         <img src="../assets/img/icon-prev.png" alt="" style="width: 12px; height: 12px" />
       </div>
     </div>
-
     <div class="user-info" @click="tologin" v-else>
       <div class="user-avatar">
         <img src="../assets/img/default_avatar.png" alt="" />
@@ -36,11 +37,21 @@
       </div>
     </div>
 
-    <div class="user-img" @click="toVip">
-      <img src="../assets/img/VIPcenter@2x.png" alt="" />
+    <div class="user-info" v-show="loginState">
+      <div class="info">
+        <van-cell-group inset>
+          <van-cell title="用户余额" :value="user.userPoint" >
+          </van-cell>
+          <van-cell title="用户状态" :value="userState" >
+          </van-cell>
+        </van-cell-group>
+      </div>
     </div>
+
     <div class="user-item">
+
       <div class="banner-title">我的账号</div>
+      <van-divider/>
       <div class="banner-body">
         <div class="grid-box">
           <div class="grid-item" @click="toOrder">
@@ -62,11 +73,8 @@
         </div>
       </div>
     </div>
-    <div class="power">
-      <div class="img">
-        <img src="../assets/img/watermark@2x.png" alt="" />
-      </div>
-    </div>
+
+
     <kp-foot-nav type="member"></kp-foot-nav>
   </div>
 </template>
@@ -87,10 +95,10 @@ export default {
     //这里存放数据
 
     return {
+      collapsed: true,
       avatarLoading: true,
     };
   },
-  //监听属性 类似于data概念
   computed: {
     loginState() {
       return this.$store.getters.loginState
@@ -100,6 +108,15 @@ export default {
     },
     avatarSrc() {
       return this.$store.getters.avatar
+    },
+    userState() {
+      switch (this.$store.getters.user.userState){
+        case "RESTRICTED": return "受限制(尚未激活)"
+        case "NORMAL": return "正常"
+        case "BANNED": return "被封禁"
+        case "LOGOFF": return "已注销"
+        default: return "未知状态"
+      }
     }
   },
   //监控data中的数据变化
@@ -137,17 +154,6 @@ export default {
       if (this.token) {
         this.$router.push({
           path: "/order",
-        });
-      } else {
-        this.$router.push({
-          path: "/login-password",
-        });
-      }
-    },
-    toVip: function () {
-      if (this.token) {
-        this.$router.push({
-          path: "/vipcenter",
         });
       } else {
         this.$router.push({
@@ -211,6 +217,11 @@ export default {
 </script>
 
 <style lang="less">
+div.info {
+  width: 100%;
+  align-items: start;
+}
+
 div.container {
   background: #f3f6f9;
   div.user-icon {
@@ -248,7 +259,7 @@ div.container {
     height: auto;
     float: left;
     box-sizing: border-box;
-    padding: 0.6667rem 0.4rem 0.8rem 0.4rem;
+    padding: 0.6667rem 0.4rem 0.0rem 0.4rem;
     display: flex;
     align-items: center;
     div.user-avatar {
@@ -265,7 +276,7 @@ div.container {
 
     div.user-body {
       flex: 1;
-      height: 1.7067rem;
+      height: 2.3rem;
       div.login-button {
         width: 100%;
         height: auto;
@@ -281,18 +292,24 @@ div.container {
         float: left;
         box-sizing: border-box;
         padding-top: 0.2667rem;
-        padding-bottom: 0.4rem;
+        padding-bottom: 0.2rem;
         font-size: 0.4267rem;
         font-weight: 600;
         color: #333;
         line-height: 0.4267rem;
       }
-
+      div.email {
+        width: 100%;
+        height: auto;
+        float: left;
+        font-weight: lighter;
+      }
       div.level {
         width: 100%;
         height: auto;
         float: left;
         font-size: 0.3467rem;
+        padding-top: 0.15rem;
         font-weight: 400;
         color: #666;
         line-height: 0.3467rem;
@@ -301,12 +318,12 @@ div.container {
   }
   div.user-img {
     width: 100%;
-    height: 1.6rem;
+    height: 1.5rem;
     float: left;
     background: #fff;
     text-align: center;
     img {
-      height: 1.6rem;
+      height: 1.5rem;
     }
   }
   div.user-item {
