@@ -1,5 +1,5 @@
 // es 中 import 语法，引入模块 Vue 核心库
-import Vue from "vue";
+import Vue from 'vue';
 // vue-router 核心库
 import VueRouter from "vue-router";
 // 引入一个组件
@@ -62,7 +62,7 @@ const routes = [
       title: "知识",
     },
   },
-  
+
   {
     path: "/member",
     name: "member",
