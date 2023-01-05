@@ -76,4 +76,32 @@ public class DateProcessor {
                 && millisToDays(date1,timeZone) == millisToDays(date2,timeZone);
     }
 
+    public static String getLastLoginInfo(Date lastLogin){
+        if(lastLogin == null){
+            return "从未登录";
+        }
+
+        Date now = new Date();
+        long delta = now.getTime() - lastLogin.getTime();
+        long deltaSecond = delta / 1000;
+
+        String lastLogInInfo;
+        if(deltaSecond <= 60){
+            lastLogInInfo = "1分钟内";
+        }else if(deltaSecond <= 3600){
+            long deltaMinute = deltaSecond / 60;
+            lastLogInInfo = deltaMinute + "分钟前";
+        }else if(deltaSecond <= 86400){
+            long deltaHour = deltaSecond / 3600;
+            lastLogInInfo = deltaHour + "小时前";
+        }else if(deltaSecond <= 1296000){
+            long deltaDay = deltaSecond / 86400;
+            lastLogInInfo =  deltaDay + "天前";
+        }else {
+            lastLogInInfo = "半个月以上未登录";
+        }
+
+        return lastLogInInfo;
+    }
+
 }
