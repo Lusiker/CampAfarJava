@@ -20,6 +20,11 @@ export default {
     return {};
   },
   created() {
+    if(!this.$store.getters.loginState){
+      if(sessionStorage.getItem('loginState')){
+        this.$store.dispatch('tryRetrieveUserInfo')
+      }
+    }
     // if (this.$router.path !== "/") {
     //   this.$router.replace("");
     // }
