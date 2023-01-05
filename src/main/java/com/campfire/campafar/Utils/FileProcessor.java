@@ -10,7 +10,7 @@ import java.util.Base64;
 
 public class FileProcessor {
     //用于处理文件相关功能
-    private static final String avatarStorePath = "..\\avatar\\";
+    public static final String avatarStorePath = "..\\avatar\\";
 
     public static boolean saveAvatar(int uid, MultipartFile file) {
         //获取文件后缀
