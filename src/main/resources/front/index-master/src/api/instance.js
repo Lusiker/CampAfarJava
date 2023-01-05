@@ -5,7 +5,7 @@
 import axios from "axios";
 import { Toast } from "vant";
 let instance = axios.create({
-  baseURL: "http://1.14.239.98",
+  baseURL: "http://localhost:8080",
   timeout: 10000,
 });
 // 请求拦截器
