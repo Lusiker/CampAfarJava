@@ -19,8 +19,10 @@ target/
 *.iml
 *.ipr
 
+### node modules of front end project ###
+/src/main/resources/front/index-master/node_modules
+
 ### NetBeans ###
-./src/main/resources/front/index-master/node_modules
 /nbproject/private/
 /nbbuild/
 /dist/
