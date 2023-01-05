@@ -1,18 +1,25 @@
 package com.campfire.campafar.Utils;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 
 public class FileProcessor {
     //用于处理文件相关功能
     public static final String avatarStorePath = "..\\avatar\\";
+    public static final String jpgHeader = "data:image/jpeg;base64,";
+    public static final String pngHeader = "data:image/png;base64,";
+    public static final String svgHeader = "data:image/svg;base64,";
+    public static final String gifHeader = "data:image/gif;base64,";
 
-    public static boolean saveAvatar(int uid, MultipartFile file) {
+    public static boolean saveAvatar(int uid, MultipartFile file) throws IOException {
         //获取文件后缀
         String fileSuffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
         //根据用户id创建文件名
@@ -25,7 +32,15 @@ public class FileProcessor {
             if(!folder.mkdirs()){
                 return false;
             }
+        } else {
+            String[] files = folder.list();
+            if(files != null) {
+                for(String f : files) {
+                    Files.delete(Path.of(folder.getAbsolutePath() + "\\" + f));
+                }
+            }
         }
+
 
         File descFile = new File(folder.getAbsolutePath(), fileName);
 
@@ -55,7 +70,10 @@ public class FileProcessor {
             return null;
         }
 
+        //获取文件后缀
         String target = files[0];
+        String suffix = target.split("\\.")[1];
+
         InputStream in;
         byte[] data;
 
@@ -68,6 +86,13 @@ public class FileProcessor {
             return null;
         }
 
-        return Base64.getEncoder().encodeToString(data);
+        return switch (suffix) {
+            case "jpg", "jpeg" -> jpgHeader + Base64.getEncoder().encodeToString(data);
+            case "png" -> pngHeader + Base64.getEncoder().encodeToString(data);
+            case "svg" -> svgHeader + Base64.getEncoder().encodeToString(data);
+            case "gif" -> gifHeader + Base64.getEncoder().encodeToString(data);
+            default -> null;
+        };
+
     }
 }
