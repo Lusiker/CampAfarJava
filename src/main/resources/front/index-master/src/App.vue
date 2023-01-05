@@ -10,12 +10,6 @@
 </template>
 
 <script>
-// // 1. 引入axios
-// import axios from "axios";
-import Vue from "vue";
-import { Button } from "vant";
-
-Vue.use(Button);
 export default {
   data: function () {
     return {};
