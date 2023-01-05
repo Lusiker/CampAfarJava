@@ -45,7 +45,7 @@
       <div class="gzh-left">
         <div class="img">
           <!-- <img :src="h5GzhV1.logo" alt="" /> -->
-          <img src="../assets/img/123.png" alt="">
+          <img src="../assets/img/apple.png" alt="">
         </div>
         <div class="info">
           <span class="name"> 文章创作 </span>
