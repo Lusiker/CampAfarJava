@@ -48,7 +48,7 @@ public class RegisterController {
             //生成临时用户名
             String newUserName = TempInfoGenerator.generateTempUsername(now,newUserEmail);
             //生成加密后的密码
-            String encodedPassword = StringEncoder.encode(newPassword);
+            String encodedPassword = DigestUtils.md5DigestAsHex(newPassword.getBytes());
 
             //创建新用户的对象
             User registeringUser = new User(newUserName,newUserEmail,encodedPassword);
