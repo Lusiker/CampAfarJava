@@ -7,12 +7,12 @@ import {
   Card,
   Cell,
   CellGroup, Collapse, CollapseItem,
-  Divider,
+  Divider, Field,
   Grid,
   GridItem,
   Loading,
   NoticeBar,
-  Tag
+  Tag, Uploader
 } from 'vant';
 
 /* 1. 引入项目初始化样式 */
@@ -80,7 +80,9 @@ Vue.use(NoticeBar)
   .use(Cell)
   .use(CellGroup)
   .use(Collapse)
-  .use(CollapseItem);
+  .use(CollapseItem)
+  .use(Uploader)
+  .use(Field);
 
 new Vue({
   router,

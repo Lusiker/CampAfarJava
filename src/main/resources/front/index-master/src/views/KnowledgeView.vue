@@ -26,7 +26,7 @@
           <div class="left active"          @click="goTofree">全部</div>
           <div class="right" @click="goTovod">免费</div>
           <!-- 12 -->
-          
+
           <!-- 12 -->
         </div>
       </div>
@@ -40,7 +40,7 @@
       <kp-foot-nav type="knowledge"></kp-foot-nav>
     </div>
   </template>
-  
+
   <script>
   //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
   //例如：import 《组件名称》 from '《组件路径》';
@@ -91,37 +91,7 @@
         });
       },
       filtrate: function (index) {
-        let lists = document.getElementsByClassName("item");
-        for (let i = 0; i < lists.length; i++) {
-          lists[i].className = "item";
-        }
-        lists[index].className = "item active";
-        if (this.num == 0) {
-          this.$request
-            .get("http://1.14.239.98/api/v2/courses?", {
-              params: {
-                page: 1,
-                page_size: 500,
-                category_id: index,
-              },
-            })
-            .then((res) => {
-              this.mains = res.data.data;
-            });
-        } else if (this.num == 1) {
-          this.$request
-            .get("/api/v2/courses?", {
-              params: {
-                page: 1,
-                page_size: 500,
-                scene: "free",
-                category_id: index,
-              },
-            })
-            .then((res) => {
-              this.frees = res.data.data;
-            });
-        }
+
       },
       show: function () {
         this.isShow = true;
@@ -144,22 +114,6 @@
         right.className = "right active";
       },
     },
-    //生命周期 - 创建完成（可以访问当前this实例）
-    async created() {
-      let res = await this.$request.get("http://1.14.239.98/api/v2/courses?", {
-        params: {
-          page: 1,
-          page_size: 500,
-        },
-      });
-      this.mains = res.data.data;
-      let result = await this.$request.get(`/api/v2/course_categories`);
-      this.choice = result.data;
-      let resData = await this.$request.get(
-        "http://1.14.239.98/api/v2/courses?page=1&page_size=10&scene=free&category_id=0"
-      );
-      this.frees = resData.data.data;
-    },
     //生命周期 - 挂载完成（可以访问DOM元素）
     mounted() {},
     beforeCreate() {}, //生命周期 - 创建之前
@@ -170,8 +124,9 @@
     destroyed() {}, //生命周期 - 销毁完成
     activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
   };
-  </script>
-  <style lang="less">
+</script>
+
+<style lang="less">
   div.container {
     position: absolute;
     left: 0;
@@ -210,7 +165,7 @@
             height: 0.64rem;
           }
         }
-  
+
         div.title {
           width: 72%;
           height: 0.48rem;
@@ -223,7 +178,7 @@
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-  
+
         div.button {
           width: auto;
           height: auto;
@@ -238,7 +193,7 @@
             span {
               margin-right: 5px;
             }
-  
+
             img {
               width: 0.64rem;
               height: 0.64rem;
@@ -271,7 +226,7 @@
               color: #3ca7fa;
             }
           }
-  
+
           div.mask {
             position: fixed;
             top: 0;
@@ -283,7 +238,7 @@
           }
         }
       }
-  
+
       div.bottom-box {
         width: 100%;
         height: 1.3333rem;
@@ -291,7 +246,7 @@
         display: flex;
         align-items: center;
         //22
-        
+
         //11
         div.left {
           // color: #3ca7fa;
@@ -325,4 +280,3 @@
     }
   }
   </style>
-  

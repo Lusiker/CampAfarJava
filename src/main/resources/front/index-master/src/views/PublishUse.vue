@@ -1,40 +1,73 @@
 <template>
   <!-- <Tinymce class="setTinymce" :height="200" v-model="value"></Tinymce> -->
   <div class="container">
-      <div class="navheader borderbox" style="border-bottom: none">
-        <img @click.stop="goBack" class="back" src="@/assets/img/icon-back.png" />
-      </div>
-  <div>
-    <editor v-model="form.formDailyTypeWorkToday">
-    </editor>
-  </div>
+    <div class="title-box">
+      <img src="../assets/img/icon-back.png" alt="" @click="goBack" />
+      <div class="text">发布文章</div>
+    </div>
+    <div class="box-body">
+      <h2>选择文章Banner</h2>
+      <van-divider/>
+      <van-uploader v-model="bannerList" :max-count="1"></van-uploader>
+    </div>
+
+    <div class="box-body">
+      <h2>设置标题</h2>
+      <van-divider/>
+      <van-cell-group>
+        <van-field v-model="title" label="文本" placeholder="请输入文章标题" />
+      </van-cell-group>
+    </div>
+
+    <div class="box-body">
+      <h2>编辑正文</h2>
+      <div>{{ content }}</div>
+      <van-divider/>
+      <vue-editor
+        v-model="content"
+      />
+    </div>
+
+    <div class="box-body">
+      <van-divider/>
+      <van-button type="info" block @click="submitArticle">提交</van-button>
+    </div>
   </div>
 </template>
 
 <script>
-
-import Editor from '@tinymce/tinymce-vue';
+import { VueEditor } from "vue2-editor";
 
 export default {
-data() {
-  return {
-    //表单提交参数
-    form: {
+  components: { VueEditor },
+  data() {
+    return {
+      //表单提交参数
+      bannerList: [],
       content: "",
-    },
-  };
-},
-methods:{
-  goBack: function () {
-        // window.history.go(-1)
-        // 表示返回上一页
-        this.$router.go(-1);
-      },
-},
-components: {
-    Editor,
+      title: ""
+    }
   },
-
+  methods:{
+    submitArticle() {
+      if(this.loginState) {
+        this.$request("/article/create?")
+      }
+    },
+    goBack: function () {
+          // window.history.go(-1)
+          // 表示返回上一页
+          this.$router.go(-1);
+      },
+  },
+  computed: {
+    loginState() {
+      return this.$store.getters.loginState
+    },
+    user() {
+      return this.$store.getters.user
+    },
+  },
 };
 </script>
 
@@ -50,6 +83,43 @@ components: {
     box-sizing: border-box;
     padding-top: 50px;
     background: #fff;
+    div.title-box {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 1.3333rem;
+      background-color: #fff;
+      z-index: 100;
+      padding-left: 0.4rem;
+      padding-right: 0.4rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid #f1f2f6;
+      img {
+        position: absolute;
+        left: 0.4rem;
+        width: 0.5067rem;
+        height: 0.5067rem;
+      }
+
+      div.text {
+        width: 72%;
+        height: auto;
+        font-size: 0.4533rem;
+        font-weight: 500;
+        text-align: center;
+        color: #333;
+        line-height: 0.5867rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  div.box-body {
+    padding: 0.6667rem 0.4rem 0.1333rem 0.4rem;
   }
   .navheader {
     position: fixed;

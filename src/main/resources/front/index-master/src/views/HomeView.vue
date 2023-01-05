@@ -157,33 +157,6 @@ export default {
       this.showQRcode = false;
     },
   },
-  //生命周期 - 创建完成（可以访问当前this实例）
-  async created() {
-    let res = await this.$request.get("/api/v2/viewBlock/page/blocks", {
-      params: {
-        platform: "h5",
-        page_name: "h5-page-index",
-      },
-    });
-    this.blocks = res.data;
-    res.data.forEach((item) => {
-      if (item.sign == "slider") {
-        this.slides = item.config_render;
-      }
-      if (item.sign === "grid-nav") {
-        this.navs = item.config_render;
-      }
-      if (item.sign === "blank") {
-        this.blank = item.config_render;
-      }
-      if (item.sign === "h5-gzh-v1") {
-        this.h5GzhV1 = item.config_render;
-      }
-      if (item.sign === "h5-vod-v1") {
-        this.mains = item.config_render;
-      }
-    });
-  },
   //生命周期 - 挂载完成（可以访问DOM元素）
   mounted() {},
   beforeCreate() {}, //生命周期 - 创建之前
