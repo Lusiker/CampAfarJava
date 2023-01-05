@@ -7,7 +7,7 @@
     </div>
     <div class="user-avatar">
       <div class="value">
-        <img :src="avatar.avatar" alt="" />
+        <img :src="avatarSrc" alt="" />
         <input type="file" accept="image/*" class="input-avatar" @change="changeAvatar($event)" />
       </div>
       <div class="text">点击更换头像</div>
@@ -17,14 +17,21 @@
       <div class="group-item">
         <div class="name">昵称</div>
         <div class="value">
-          <span>{{ avatar.nick_name }}</span
+          <span>{{ user.userName }}</span
           ><img src="../assets/img/icon-prev.png" class="arrow" />
         </div>
       </div>
       <div class="group-item">
-        <div class="name">绑定手机号</div>
+        <div class="name">更换邮箱</div>
         <div class="value">
-          <span>{{ avatar.mobile }}</span
+          <span>{{ user.userEmail }}</span
+          ><img src="../assets/img/icon-prev.png" class="arrow" />
+        </div>
+      </div>
+      <div class="group-item">
+        <div class="name">激活邮箱</div>
+        <div class="value">
+          <span>当前状态:{{ user.userHasActivated ? '已激活' : '未激活' }}</span
           ><img src="../assets/img/icon-prev.png" class="arrow" />
         </div>
       </div>
@@ -48,12 +55,21 @@ export default {
   data() {
     //这里存放数据
     return {
-      avatar: {},
       file: "",
     };
   },
   //监听属性 类似于data概念
-  computed: {},
+  computed: {
+    loginState() {
+      return this.$store.getters.loginState
+    },
+    user() {
+      return this.$store.getters.user
+    },
+    avatarSrc() {
+      return this.$store.getters.avatar
+    }
+  },
   //监控data中的数据变化
   watch: {},
   //方法集合
@@ -64,21 +80,44 @@ export default {
       });
     },
     changeAvatar: function (event) {
-      this.file = event.target.files[0];
-      let formData = new FormData();
-      formData.append("file", this.file);
-      this.$request.post("/api/v2/member/detail/avatar", formData).then(() => {
-        location.reload();
-      });
+      if(this.loginState) {
+        this.file = event.target.files[0];
+        let formData = new FormData();
+        formData.append("file", this.file);
+        this.$request.post("/upload/avatar?uid=" + this.user.userId, formData)
+            .then(() => {
+              location.reload();
+            });
+      }
     },
   },
-  //生命周期 - 创建完成（可以访问当前this实例）
-  async created() {
-    let res = await this.$request.get("http://1.14.239.98/api/v2/member/detail");
-    this.avatar = res.data;
-  },
   //生命周期 - 挂载完成（可以访问DOM元素）
-  mounted() {},
+  mounted() {
+    if(this.loginState) {
+      if (!this.$store.getters.avatarHasCached) {
+        this.$request.get('/acquire/avatar?uid=' + this.user.userId)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      this.$store.dispatch('cacheAvatar', res.returnObject)
+                      this.avatarLoading = false
+
+                      break
+                    }
+                    default: {
+                      this.avatarLoading = false
+
+                      return
+                    }
+                  }
+                }
+            )
+      } else {
+        this.avatarLoading = false
+      }
+    }
+  },
   beforeCreate() {}, //生命周期 - 创建之前
   beforeMount() {}, //生命周期 - 挂载之前
   beforeUpdate() {}, //生命周期 - 更新之前
