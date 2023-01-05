@@ -15,7 +15,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         //将获取 /files/avatar/** 的请求映射至 ../avatar/
         File avatarPath = new File(FileProcessor.avatarStorePath);
-        
+
         registry.addResourceHandler("/files/avatar/**")
                 .addResourceLocations("file:" + avatarPath.getAbsolutePath() + "\\")
                 .setCachePeriod(3600)
