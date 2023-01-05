@@ -2,9 +2,10 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import { Divider, NoticeBar, Tag } from 'vant';
 
 /* 1. 引入项目初始化样式 */
-/* 1.1 @ 脚手架项目别称，代表 src目录 
+/* 1.1 @ 脚手架项目别称，代表 src目录
    1.2 webpack 处理
 */
 import "@/assets/styles/reset.css";
@@ -75,6 +76,9 @@ Vue.filter("timeago", function (time) {
   }
   return result;
 });
+
+Vue.use(NoticeBar).use(Divider).use(Tag)
+
 new Vue({
   router,
   store,
