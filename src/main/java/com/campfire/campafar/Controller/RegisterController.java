@@ -23,7 +23,7 @@ public class RegisterController {
     @Resource
     ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/register")
+    @RequestMapping( "/register")
     public String userRegister(@RequestParam(value = "email",defaultValue = "")String newUserEmail,
                                @RequestParam(value = "password",defaultValue = "")String newPassword) throws JsonProcessingException {
         if(newUserEmail.length() != 0 && newPassword.length() != 0){
@@ -64,4 +64,5 @@ public class RegisterController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
     }
+
 }
