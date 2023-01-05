@@ -88,7 +88,7 @@ const mutations = {
         userName: sessionStorage.getItem('userName'),
         userEmail: sessionStorage.getItem('userEmail'),
         userHasActivated: sessionStorage.getItem('userHasActivated') === "true",
-        userState: Number(sessionStorage.getItem('userState')),
+        userState: sessionStorage.getItem('userState'),
         userIntroduction: sessionStorage.getItem('userIntroduction'),
         userFollowerCount: Number(sessionStorage.getItem('userFollowerCount')),
         userFollowingCount: Number(sessionStorage.getItem('userFollowingCount')),
