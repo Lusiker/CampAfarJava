@@ -1,6 +1,5 @@
 package com.campfire.campafar.Utils;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
