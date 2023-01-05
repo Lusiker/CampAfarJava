@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 
 @RestController
 public class FileController {
@@ -32,7 +33,7 @@ public class FileController {
      */
     @RequestMapping("/upload/avatar")
     public String uploadAvatar(@RequestParam(value = "uid", defaultValue = "")String uidStr,
-                               @RequestBody MultipartFile file) throws JsonProcessingException {
+                               @RequestBody MultipartFile file) throws IOException {
         if(file == null) {
             //文件参数为空
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
