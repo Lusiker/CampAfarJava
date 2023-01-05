@@ -167,9 +167,7 @@ const routes = [
   {
     path: '/publish',
     name: 'publish',
-    component: () => {
-      import("../views/PublishUse.vue")
-    },
+    component: () => import("../views/PublishUse.vue"),
     meta: {
       title: "发布"
     }
