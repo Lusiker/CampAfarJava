@@ -5,76 +5,98 @@
       </div>
       <div class="password-login-form">
         <div class="password-login-title">注册</div>
+        <van-divider />
         <div class="item">
-          <div class="name">邮箱</div>
+          <div class="name">邮箱  </div>
           <div class="input">
             <input
-              v-model="loginForm.mobile"
-              type="number"
+              v-model="registerForm.email"
               class="input-text"
               placeholder="请输入邮箱"
             />
             <img
-              @click.stop="clearMobile"
-              v-show="loginForm.mobile"
+              @click.stop="clearEmail"
+              v-show="registerForm.email"
               src="@/assets/img/new/close.png"
               style="width: 16px; height: 16px"
             />
-            <a href="#">点击获取验证码</a>
           </div>
         </div>
+        <van-notice-bar
+            :text="'邮箱不合法'"
+            v-if="!validateEmail(registerForm.email) && registerForm.email.length !== 0"
+        />
         <div class="item">
-          <div class="name">验证码</div>
+          <div class="name">密码  </div>
           <div class="input">
             <input
               type="password"
-              v-model="loginForm.password"
-              class="input-text"
-              placeholder="请输入验证码"
-            />
-          </div>
-        </div>
-      
-        <div class="item">
-          <div class="name">密码</div>
-          <div class="input">
-            <input
-              type="password"
-              v-model="loginForm.password"
+              v-model="registerForm.password"
               class="input-text"
               placeholder="请输入密码"
             />
             <img
               @click.stop="clearPassword"
-              v-show="loginForm.password"
+              v-show="registerForm.password"
               src="@/assets/img/new/close.png"
               style="width: 16px; height: 16px"
             />
           </div>
         </div>
+        <van-notice-bar
+            :text="'注意：密码长度应在6到20位之间（当前' + registerForm.password.length + ')'"
+            v-if="registerForm.password.length !== 0 || registerForm.passwordRepeat.length !== 0"
+        />
+        <div class="item">
+          <div class="name">重复密码</div>
+          <div class="input">
+            <input
+                type="password"
+                v-model="registerForm.passwordRepeat"
+                class="input-text"
+                placeholder="请再次输入密码"
+            />
+            <img
+                @click.stop="clearPasswordRepeat"
+                v-show="registerForm.passwordRepeat"
+                src="@/assets/img/new/close.png"
+                style="width: 16px; height: 16px"
+            />
+          </div>
+        </div>
+        <van-notice-bar
+          :text="'两次输入密码不一致'"
+          v-if="registerForm.passwordRepeat !== registerForm.password"
+        />
+        <div  @click="$router.push('/login-password')">
+          <a>返回登录</a>
+        </div>
       </div>
+
       <div class="box border-box mt-15 pl-60 pr-60">
         <div
           @click.stop="handleLogin"
-          v-if="loginForm.mobile && loginForm.password"
+          v-if="registerForm.email && registerForm.password && registerForm.passwordRepeat"
           class="btn-confirm active"
         >
-          登录
+          注册
         </div>
-        <div v-else class="btn-confirm">登录</div>
+        <div v-else class="btn-confirm">注册</div>
       </div>
     </div>
   </template>
-  
-  <script>
+
+<script>
   import { Toast } from "vant";
   export default {
     data() {
       return {
         url: this.$route.query.url || "",
-        loginForm: {
-          mobile: "",
+        loading: false,
+        registerForm: {
+          email: "",
           password: "",
+          passwordRepeat: "",
         },
       };
     },
@@ -85,38 +107,60 @@
     methods: {
       // 处理注册登录
       handleLogin: function () {
+        if(this.loading) {
+          Toast.fail("注册进行中！")
+          return;
+        }
         // 对账号和密码进行校验
-        if (!this.loginForm.password) {
-          Toast.fail("密码不能为空！");
+        this.loading = true
+        if (!this.registerForm.password) {
+          Toast.fail("密码不能为空！")
+          this.loading = false
           return;
         }
-        if (!/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(this.loginForm.mobile)) {
-          Toast.fail("手机密码格式不符合要求！");
+        if(this.registerForm.passwordRepeat !== this.registerForm.password){
+          Toast.fail("两次输入密码不一致！")
+          this.loading = false
           return;
         }
-        // 才是后台发送的逻辑代码
+        if (!this.validateEmail(this.registerForm.email)) {
+          Toast.fail("邮箱格式不符合要求！")
+          this.loading = false
+          return;
+        }
+
+        //进行注册
         this.$request
-          .post("/api/v2/login/password", {
-            mobile: this.loginForm.mobile,
-            password: this.loginForm.password,
-          })
+          .post("/register?email=" + this.registerForm.email + "&password=" + this.registerForm.password)
           .then((res) => {
-            //   console.log(res);
-            if (res.code === 0) {
-              // 把token 存到本地localStorage 中
-              // key h5-token
-              localStorage.setItem("h5-token", res.data.token);
-              // 回跳之前页面
-              if (this.url) {
-                window.location.href = this.url;
-              } else {
-                this.$router.go(-1);
-                //   window.location.href = window.location.host;
+            this.loading = false
+
+            switch (res.stateEnum.state) {
+              case 0: {
+                Toast.fail("注册成功，前往登录界面！")
+                this.$router.push('/login-password')
+                return
+              }
+              case -1: {
+                if(res.specificCode === 1) {
+                  Toast.fail("请求参数有误！")
+                  return
+                } else if(res.specificCode === 2) {
+                  Toast.fail("此邮箱已被使用！")
+                  return
+                } else {
+                  Toast.fail("未知错误！")
+                  return
+                }
+              }
+              case 1: {
+                Toast.fail("服务器出现错误！")
+                return
+              }
+              default: {
+                break
               }
             }
-          })
-          .catch((err) => {
-            Toast.fail("登录失败了！");
           });
       },
       goBack: function () {
@@ -124,17 +168,27 @@
         // 表示返回上一页
         this.$router.go(-1);
       },
-      clearMobile: function () {
-        this.loginForm.mobile = "";
+      validateEmail(email){
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+      },
+      clearEmail: function () {
+        this.registerForm.email = "";
       },
       clearPassword: function () {
-        this.loginForm.password = "";
+        this.registerForm.password = "";
       },
+      clearPasswordRepeat() {
+        this.registerForm.passwordRepeat = "";
+      }
     },
   };
   </script>
-  
-  <style lang="less" scoped>
+
+<style lang="less" scoped>
   .container {
     position: absolute;
     left: 0;
@@ -162,54 +216,54 @@
     align-items: center;
     border-bottom: 1px solid #f1f2f6;
   }
-  
+
   .mr-5 {
     margin-right: 5px;
   }
-  
+
   .mr-10 {
     margin-right: 10px;
   }
-  
+
   .ml-5 {
     margin-left: 5px;
   }
-  
+
   .ml-10 {
     margin-left: 10px;
   }
-  
+
   .mt-10 {
     margin-top: 10px;
   }
-  
+
   .mt-15 {
     margin-top: 15px;
   }
-  
+
   .pl-30 {
     padding-left: 15px;
   }
-  
+
   .pr-30 {
     padding-right: 15px;
   }
-  
+
   .pl-60 {
     padding-left: 30px;
   }
-  
+
   .pr-60 {
     padding-right: 30px;
   }
-  
+
   .navheader .back {
     position: absolute;
     left: 15px;
     width: 19px;
     height: 19px;
   }
-  
+
   .navheader .title {
     width: 72%;
     height: auto;
@@ -244,7 +298,7 @@
       background: #3ca7fa;
     }
   }
-  
+
   .password-login-form {
     width: 100%;
     height: auto;
@@ -263,7 +317,7 @@
       box-sizing: border-box;
       margin-bottom: 30px;
     }
-    
+
       .item {
       width: 100%;
       height: auto;
@@ -273,7 +327,7 @@
       display: flex;
       border-bottom: 1px solid #f4faff;
       margin-bottom: 20px;
-  
+
       .name {
         min-width: 48px;
         height: auto;
@@ -290,7 +344,7 @@
         justify-content: space-between;
         box-sizing: border-box;
         align-items: center;
-  
+
         .input-text {
           max-width: 200px;
           height: 36px;
@@ -317,10 +371,9 @@
     }
   }
   </style>
-  
+
   <style>
   #page {
     background-color: #f8f8f8;
   }
   </style>
-  

@@ -5,22 +5,46 @@
     </div>
     <div class="password-login-form">
       <div class="password-login-title">登录</div>
+      <van-divider />
       <div class="item">
-        <div class="name">邮箱</div>
+        <div class="name">{{loginMethod ? "邮箱" : "用户名"}}</div>
         <div class="input">
-          <input
-            v-model="loginForm.mobile"
-            type="number"
-            class="input-text"
-            placeholder="请输入邮箱"
-          />
-          <img
-            @click.stop="clearMobile"
-            v-show="loginForm.mobile"
-            src="@/assets/img/new/close.png"
-            style="width: 16px; height: 16px"
-          />
+          <div v-if="loginMethod">
+            <input
+              v-model="loginForm.email"
+              class="input-text"
+              placeholder="请输入邮箱"
+            />
+            <img
+                @click.stop="clearEmail"
+                v-show="loginForm.email"
+                src="@/assets/img/new/close.png"
+                style="width: 16px; height: 16px"
+            />
+          </div>
+          <div v-else>
+            <input
+                v-model="loginForm.username"
+                class="input-text"
+                placeholder="请输入用户名"
+            />
+            <img
+                @click.stop="clearUsername"
+                v-show="loginForm.username"
+                src="@/assets/img/new/close.png"
+                style="width: 16px; height: 16px"
+            />
+          </div>
         </div>
+      </div>
+      <div class="item" @click.stop="changeMethod">
+        <van-tag plain type="primary">
+          更换登录方式&nbsp;&nbsp;
+          <img
+              :src="loginMethod ? emailIcon : usernameIcon"
+              style="width: 16px; height: 16px"
+          />
+        </van-tag>
       </div>
       <div class="item">
         <div class="name">密码</div>
@@ -46,7 +70,7 @@
     <div class="box border-box mt-15 pl-60 pr-60">
       <div
         @click.stop="handleLogin"
-        v-if="loginForm.mobile && loginForm.password"
+        v-if="inputAvailable"
         class="btn-confirm active"
       >
         登录
@@ -62,17 +86,38 @@ export default {
   data() {
     return {
       url: this.$route.query.url || "",
+      loginMethod: true,
+      loading: false,
       loginForm: {
-        mobile: "",
+        email: "",
+        username: "",
         password: "",
       },
+      usernameIcon: require("@/assets/img/icon-me-h@2x.png"),
+      emailIcon: require("@/assets/img/icon-email.png")
     };
   },
   mounted: function () {
-    // console.log(this.$route);
+
   },
-  computed: {},
+  computed: {
+    inputAvailable() {
+      if(this.loginMethod) {
+        return this.loginForm.email.length !== 0 && this.loginForm.password.length !== 0
+      } else {
+        return this.loginForm.username.length !== 0 && this.loginForm.password.length !== 0
+      }
+    }
+  },
   methods: {
+    changeMethod() {
+      if(this.loginMethod) {
+        this.loginForm.email = ""
+      } else {
+        this.loginForm.username = ""
+      }
+      this.loginMethod = !this.loginMethod
+    },
     toregister: function () {
       this.$router.push({
         path: "/register",
@@ -80,47 +125,105 @@ export default {
     },
     // 处理注册登录
     handleLogin: function () {
+      if(this.loading) {
+        Toast.fail("登录进行中！")
+        return;
+      }
+
+
+      this.loading = true
       // 对账号和密码进行校验
       if (!this.loginForm.password) {
         Toast.fail("密码不能为空！");
+        this.loading = false
         return;
       }
-      if (!/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(this.loginForm.mobile)) {
-        Toast.fail("手机密码格式不符合要求！");
-        return;
+
+      //进行登录
+      if(this.loginMethod) {
+        this.$request
+            .post("login/email?email=" + this.loginForm.email + "&password=" + this.loginForm.password)
+            .then((res) => {
+              this.loading = false
+
+              switch (res.stateEnum.state) {
+                case 0: {
+                  Toast.fail("登录成功！")
+                  console.log(res, res.returnObject);
+                  this.$store.dispatch('login', res.returnObject)
+
+                  // 强制跳转用户界面
+                  this.$router.push({
+                    path: '/member',
+                    replace: true
+                  })
+
+                  break
+                }
+                case -1: {
+                  if (res.specificCode === 1) {
+                    Toast.fail("请求参数有误！")
+                    return
+                  } else if (res.specificCode === 2) {
+                    Toast.fail("用户不存在或已注销！")
+                    return
+                  } else if (res.specificCode === 3) {
+                    Toast.fail("密码错误")
+                    return
+                  } else {
+                    Toast.fail("未知错误！")
+                    return
+                  }
+                }
+                case 1: {
+                  Toast.fail("服务器出现错误！")
+                  return
+                }
+                default: {
+                  Toast.fail("未知错误！")
+                  return
+                }
+              }
+            })
+      } else {
+        this.$request
+            .post("/login/usernameLogin", { userName: this.loginForm.username, userPassword: this.loginForm.password, })
+            .then((res) => {
+              this.loading = false
+              if(res.code === 1) {
+                Toast.fail("登录成功！")
+                console.log(res, res.returnObject);
+                this.$store.dispatch('login', res.returnObject)
+
+                // 强制跳转用户界面
+                this.$router.push({
+                  path: '/member',
+                  replace: true
+                })
+              } else if(res.code === 0) {
+                if(res.msg === "登录失败") {
+                  Toast.fail("登录失败！")
+                } else if (res.msg === "账号已注销") {
+                  Toast.fail("账号已注销！")
+                } else {
+                  Toast.fail("未知错误！")
+                }
+              } else {
+                Toast.fail("未知错误！")
+              }
+            })
       }
-      // 才是后台发送的逻辑代码
-      this.$request
-        .post("/api/v2/login/password", {
-          mobile: this.loginForm.mobile,
-          password: this.loginForm.password,
-        })
-        .then((res) => {
-          //   console.log(res);
-          if (res.code === 0) {
-            // 把token 存到本地localStorage 中
-            // key h5-token
-            localStorage.setItem("h5-token", res.data.token);
-            // 回跳之前页面
-            if (this.url) {
-              window.location.href = this.url;
-            } else {
-              this.$router.go(-1);
-              //   window.location.href = window.location.host;
-            }
-          }
-        })
-        .catch((err) => {
-          Toast.fail("登录失败了！");
-        });
     },
     goBack: function () {
       // window.history.go(-1)
       // 表示返回上一页
       this.$router.go(-1);
     },
-    clearMobile: function () {
-      this.loginForm.mobile = "";
+    clearEmail: function () {
+      this.loginForm.email = "";
+    },
+    clearUsername: function () {
+      this.loginForm.username = ""
     },
     clearPassword: function () {
       this.loginForm.password = "";
@@ -130,6 +233,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+#page {
+  background-color: #f8f8f8;
+}
 .container {
   position: absolute;
   left: 0;
@@ -258,7 +364,7 @@ export default {
     box-sizing: border-box;
     margin-bottom: 30px;
   }
-  
+
     .item {
     width: 100%;
     height: auto;
@@ -280,7 +386,6 @@ export default {
     }
     #register{
       font-size: 50px;
-
     }
       .input {
       flex: 1;
@@ -314,11 +419,5 @@ export default {
       }
     }
   }
-}
-</style>
-
-<style>
-#page {
-  background-color: #f8f8f8;
 }
 </style>
