@@ -19,6 +19,12 @@ const actions = {
       context.commit('TRY_RETRIEVE_USER_INFO')
     }
   },
+
+  cacheAvatar(context,src) {
+    if(state.loginState){
+      context.commit('CACHE_AVATAR',src)
+    }
+  }
 }
 
 const mutations = {
@@ -81,7 +87,7 @@ const mutations = {
         userId: Number(sessionStorage.getItem('userId')),
         userName: sessionStorage.getItem('userName'),
         userEmail: sessionStorage.getItem('userEmail'),
-        userHasActivated: Boolean(sessionStorage.getItem('userHasActivated')),
+        userHasActivated: sessionStorage.getItem('userHasActivated') === "true",
         userState: Number(sessionStorage.getItem('userState')),
         userIntroduction: sessionStorage.getItem('userIntroduction'),
         userFollowerCount: Number(sessionStorage.getItem('userFollowerCount')),
@@ -96,10 +102,18 @@ const mutations = {
       }
     }
   },
+
+  CACHE_AVATAR(state,src) {
+    state.avatarCached = true
+    state.avatarSrc = src
+  }
 }
 
 const state = {
     loginState: false,
+    avatarCached: false,
+    avatarSrc: '',
+    defaultAvatar: require('../assets/img/icon-me-n@2x.png'),
     currentUser: {
       userId: 0,
       userName: "",
@@ -126,6 +140,16 @@ const getters = {
   user(state){
     return state.currentUser
   },
+  avatarHasCached(state) {
+    return state.avatarCached
+  },
+  avatar(state) {
+    if(state.avatarCached) {
+      return state.avatarSrc.length === 0 ? state.defaultAvatar : state.avatarSrc
+    } else {
+      return state.defaultAvatar
+    }
+  }
 }
 
 export default new Vuex.Store({
