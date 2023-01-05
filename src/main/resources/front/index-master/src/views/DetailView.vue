@@ -3,11 +3,13 @@
   <div class="container">
     <div class="nav-box">
       <img src="../assets/img/icon-back.png" alt="" @click="goToHome()" />
-      <div class="title">课程详情</div>
+      <div class="title">知识详情</div>
     </div>
     <div class="main-img">
-      <img :src="mains.thumb" alt="" />
-      <div class="main-title">{{ mains.title }}</div>
+      <!-- <img :src="mains.thumb" alt="" /> -->
+      <!-- <div class="main-title">{{ mains.title }}</div> -->
+      <div>标题</div>
+      <div class="main-title"><h1>{{ mains.title }}</h1></div>
     </div>
     <div class="stat">
       <div class="left-box">
@@ -24,9 +26,10 @@
     <div class="border"></div>
     <div class="body">
       <van-tabs v-model:active="active" line-width="20px">
-        <van-tab title="介绍">
+        <van-tab title="内容">
           <div class="cource-desc">
-            <div class="desc" v-html="mains.render_desc"></div>
+            <!-- <div class="desc" v-html="mains.render_desc"></div> -->
+            <p>内容是老流域apex拉中之拉，天天不上号，实属不行!爱上的发生打发的说法是打发打发的说法当时发生的发生对方的发生地方</p>
           </div>
           <div class="bottom-tab" v-if="token">
             <div class="btn">
@@ -48,15 +51,15 @@
               </div>
               <div class="text">收藏</div>
             </div>
-            <div class="left">
+            <!-- <div class="left">
               <span>VIP会员免费看</span>
-            </div>
+            </div> -->
             <div class="right">
               <span>订阅课程</span>
             </div>
           </div>
         </van-tab>
-        <van-tab title="目录">
+        <!-- <van-tab title="目录">
           <div class="chapter-box" v-for="item in data.chapters" :key="item.id">
             <div class="chapter-title">
               {{ item.title }}
@@ -107,7 +110,7 @@
               </div>
             </div>
           </div>
-        </van-tab>
+        </van-tab> -->
         <van-tab title="评论">
           <div
             class="comments-box"
@@ -309,7 +312,7 @@ div.container {
     .main-title {
       box-sizing: border-box;
       padding: 0.4rem 0.4rem 0 0.4rem;
-      font-size: 0.4rem;
+      font-size: 0.5rem;
       font-weight: 500;
       color: #171923;
       word-break: break-all;
@@ -376,6 +379,10 @@ div.container {
       line-height: 0.56rem;
       box-sizing: border-box;
       padding: 0.5333rem 0.4rem 0.4rem 0.4rem;
+      p{
+        text-indent: 2em;
+        font-size: 20px;
+      }
       div.desc {
         width: 100%;
         p {

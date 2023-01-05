@@ -32,27 +32,28 @@
     <div class="gzh-box">
       <div class="mask" v-show="showQRcode" @click="hide">
         <div class="modal" @click.stop="show">
-          <img src="../assets/img/topright.png" alt="" class="topright" />
-          <div class="title">关注公众号</div>
-          <div class="body">
+          <!-- <img src="../assets/img/topright.png" alt="" class="topright" /> -->
+          <!-- <div class="title">关注公众号</div> -->
+          <!-- <div class="body">
             <div class="code">
               <img :src="h5GzhV1.qrcode" alt="" />
             </div>
-          </div>
-          <div class="tip">长按二维码识别或截图保存</div>
+          </div> -->
+          <!-- <div class="tip">长按二维码识别或截图保存</div> -->
         </div>
       </div>
       <div class="gzh-left">
         <div class="img">
-          <img :src="h5GzhV1.logo" alt="" />
+          <!-- <img :src="h5GzhV1.logo" alt="" /> -->
+          <img src="../assets/img/123.png" alt="">
         </div>
         <div class="info">
-          <span class="name"> {{ h5GzhV1.name }} </span>
-          <span class="desc"> {{ h5GzhV1.desc }} </span>
+          <span class="name"> 文章创作 </span>
+          <span class="desc"> 点亮篝火，照亮他人前行的路 </span>
         </div>
       </div>
       <div class="gzh-right">
-        <div class="btn" @click="show">关注</div>
+        <div class="btn" @click="topublish">发布</div>
       </div>
     </div>
     <div class="section-box">
@@ -67,9 +68,9 @@
       </div>
     </div>
     <div class="footer-box">
-      <div class="inline-img">
+      <!-- <div class="inline-img">
         <img src="../assets/img/watermark@2x.png" alt="" />
-      </div>
+      </div> -->
     </div>
     <kp-foot-nav type="home"></kp-foot-nav>
   </div>
@@ -130,6 +131,11 @@ export default {
   watch: {},
   //方法集合
   methods: {
+    topublish: function () {
+      this.$router.push({
+        path: "/publish",
+      });
+    },
     goToAllcourse: function () {
       this.$router.push({
         path: "/vod",
