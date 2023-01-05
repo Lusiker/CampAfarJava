@@ -2,7 +2,18 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import { Divider, Loading, NoticeBar, Tag } from 'vant';
+import {
+  Button,
+  Card,
+  Cell,
+  CellGroup, Collapse, CollapseItem,
+  Divider,
+  Grid,
+  GridItem,
+  Loading,
+  NoticeBar,
+  Tag
+} from 'vant';
 
 /* 1. 引入项目初始化样式 */
 /* 1.1 @ 脚手架项目别称，代表 src目录
@@ -16,26 +27,7 @@ import instance from "@/api/instance";
 Vue.config.productionTip = false;
 Vue.prototype.$request = instance;
 // 配置全局前置导航守卫
-router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title;
-  }
-  if (to.meta.auth) {
-    let token = localStorage.getItem("h5-token");
-    if (token) {
-      next();
-    } else {
-      next({
-        path: "/login-password",
-        query: {
-          url: window.location.href,
-        },
-      });
-    }
-  } else {
-    next();
-  }
-});
+
 Vue.filter("timeago", function (time) {
   let data = new Date(time);
   let dateTimeStamp = data.getTime();
@@ -77,7 +69,18 @@ Vue.filter("timeago", function (time) {
   return result;
 });
 
-Vue.use(NoticeBar).use(Divider).use(Tag).use(Loading)
+Vue.use(NoticeBar)
+  .use(Divider)
+  .use(Tag)
+  .use(Loading)
+  .use(Button)
+  .use(Grid)
+  .use(GridItem)
+  .use(Card)
+  .use(Cell)
+  .use(CellGroup)
+  .use(Collapse)
+  .use(CollapseItem);
 
 new Vue({
   router,
