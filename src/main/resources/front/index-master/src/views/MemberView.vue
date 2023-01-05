@@ -9,18 +9,21 @@
         <img src="../assets/img/icon-setting@2x.png" alt="" />
       </div>
     </div>
-    <div class="user-info" v-if="token" @click="goTousers">
+
+    <div class="user-info" v-if="loginState" @click="goTousers">
       <div class="user-avatar">
-        <img :src="user.avatar" alt="" />
+        <van-loading v-if="avatarLoading" />
+        <img :src="avatarSrc" alt="" v-else/>
       </div>
       <div class="user-body">
-        <div class="name">{{ user.nick_name }}</div>
-        <div class="level">{{ role.name }}</div>
+        <div class="name">{{ user.userName }}</div>
+        <div class="level">经验值：{{ user.userExp }}</div>
       </div>
       <div class="user-back">
         <img src="../assets/img/icon-prev.png" alt="" style="width: 12px; height: 12px" />
       </div>
     </div>
+
     <div class="user-info" @click="tologin" v-else>
       <div class="user-avatar">
         <img src="../assets/img/default_avatar.png" alt="" />
@@ -32,6 +35,7 @@
         <img src="../assets/img/icon-prev.png" alt="" style="width: 12px; height: 12px" />
       </div>
     </div>
+
     <div class="user-img" @click="toVip">
       <img src="../assets/img/VIPcenter@2x.png" alt="" />
     </div>
@@ -83,13 +87,21 @@ export default {
     //这里存放数据
 
     return {
-      token: {},
-      user: {},
-      role: {},
+      avatarLoading: true,
     };
   },
   //监听属性 类似于data概念
-  computed: {},
+  computed: {
+    loginState() {
+      return this.$store.getters.loginState
+    },
+    user() {
+      return this.$store.getters.user
+    },
+    avatarSrc() {
+      return this.$store.getters.avatar
+    }
+  },
   //监控data中的数据变化
   watch: {},
   //方法集合
@@ -111,7 +123,7 @@ export default {
       }
     },
     goTousers: function () {
-      if (this.token) {
+      if (this.loginState) {
         this.$router.push({
           path: "/users",
         });
@@ -160,16 +172,34 @@ export default {
       }
     },
   },
-
-  //生命周期 - 创建完成（可以访问当前this实例）
-  async created() {
-    let res = await this.$request.get("http://1.14.239.98/api/v2/member/detail");
-    this.user = res.data;
-    this.role = res.data.role;
-    this.token = localStorage.getItem("h5-token");
-  },
   //生命周期 - 挂载完成（可以访问DOM元素）
-  mounted() {},
+  mounted() {
+    //若已登录，请求头像
+    if(this.loginState) {
+      if(!this.$store.getters.avatarHasCached) {
+        this.$request.get('/acquire/avatar?uid=' + this.user.userId)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      this.$store.dispatch('cacheAvatar', res.returnObject)
+                      this.avatarLoading = false
+
+                      break
+                    }
+                    default: {
+                      this.avatarLoading = false
+
+                      return
+                    }
+                  }
+                }
+            )
+      } else {
+        this.avatarLoading = false
+      }
+    }
+  },
   beforeCreate() {}, //生命周期 - 创建之前
   beforeMount() {}, //生命周期 - 挂载之前
   beforeUpdate() {}, //生命周期 - 更新之前
@@ -179,6 +209,7 @@ export default {
   activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
 };
 </script>
+
 <style lang="less">
 div.container {
   background: #f3f6f9;
