@@ -164,6 +164,16 @@ const routes = [
       title: "账户注册",
     },
   },
+  {
+    path: '/publish',
+    name: 'publish',
+    component: () => {
+      import("../views/PublishUse.vue")
+    },
+    meta: {
+      title: "发布"
+    }
+  }
 ];
 
 // 创建一个路由的实例
