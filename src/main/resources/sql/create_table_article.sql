@@ -29,7 +29,7 @@ CREATE TABLE `article`  (
   `article_tag` int(32) unsigned not null default '0', #文章标签，标签最多4个（0~63），通过数字形式存放00000000~63636363，每次取模100得到一个标签
   `article_is_free` tinyint(1) NOT NULL, #文章是否免费
   `article_price` decimal(7, 2) NOT NULL, #文章标价
-  `article_detail` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, #文章正文
+  `article_detail` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, #文章正文
   `article_view_count` int unsigned not null default '0', #文章浏览次数
   `article_state` tinyint(2) DEFAULT '0', #文章状态，正常，已删除，审核中
   `article_visible` tinyint(1) DEFAULT '1', #文章可见性
