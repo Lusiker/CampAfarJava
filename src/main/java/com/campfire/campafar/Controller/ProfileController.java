@@ -11,23 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
-@RequestMapping("/userinfo")
+@RequestMapping("/user")
 public class ProfileController {
     @Autowired
     private UserService userService;
     //用户相关接口
-    /**
-     * 根据id查询用户信息
-     * @param userId
-     * @return
-     */
-    @GetMapping("check/{userId}")
-    public R<User> getById(@PathVariable Integer userId){
-        log.info("根据id查询用户信息...");
-        User user = userService.getById(userId);
-        if(user != null){
-            return R.success(user);
-        }
-        return R.error("没有查询到对应用户信息");
-    }
 }
