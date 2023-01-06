@@ -11,7 +11,7 @@ import {
   Grid,
   GridItem,
   Loading,
-  NoticeBar,
+  NoticeBar, Switch,
   Tag, Uploader
 } from 'vant';
 
@@ -82,7 +82,8 @@ Vue.use(NoticeBar)
   .use(Collapse)
   .use(CollapseItem)
   .use(Uploader)
-  .use(Field);
+  .use(Field)
+  .use(Switch);
 
 new Vue({
   router,

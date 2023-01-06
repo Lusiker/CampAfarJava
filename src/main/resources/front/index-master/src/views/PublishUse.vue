@@ -1,5 +1,4 @@
 <template>
-  <!-- <Tinymce class="setTinymce" :height="200" v-model="value"></Tinymce> -->
   <div class="container">
     <div class="title-box">
       <img src="../assets/img/icon-back.png" alt="" @click="goBack" />
@@ -17,12 +16,37 @@
       <van-cell-group>
         <van-field v-model="title" label="文本" placeholder="请输入文章标题" />
       </van-cell-group>
+      <van-notice-bar
+          :text="'标题不能为空且长度不大于50(当前' + title.length + ')'"
+          v-if="title.length !== 0"
+      />
+    </div>
+
+    <div class="box-body">
+      <h2>付费信息</h2>
+      <van-divider/>
+      <van-cell-group>
+        <van-cell :title="'是否免费'">
+          <van-switch v-model="isFree" /> {{isFree? '免费' : '付费'}}
+        </van-cell>
+        <van-cell title="文章价格">
+          <van-field type="number" v-model="price" :disabled="isFree" placeholder="请输入文章价格" />
+        </van-cell>
+      </van-cell-group>
+      <van-notice-bar
+          :text="'价格应介于0.00到99999.99之间'"
+          v-if="price.length !== 0 && !priceAvailable"
+      />
     </div>
 
     <div class="box-body">
       <h2>编辑正文</h2>
       <div>{{ content }}</div>
       <van-divider/>
+      <van-notice-bar
+          :text="'图片数量不应超过10张(当前' + imageCount + ')'"
+          v-if="imageCount !== 0"
+      />
       <vue-editor
         v-model="content"
       />
@@ -37,21 +61,144 @@
 
 <script>
 import { VueEditor } from "vue2-editor";
+import { Toast } from 'vant';
 
 export default {
-  components: { VueEditor },
+  components: { VueEditor, Toast },
   data() {
     return {
-      //表单提交参数
       bannerList: [],
       content: "",
-      title: ""
+      title: "",
+      imageCount: 0,
+      loading: false,
+      isFree: false,
+      price: "0.00"
     }
   },
   methods:{
     submitArticle() {
+      if(this.loading) {
+        Toast.fail("文章上传中")
+        return
+      }
+
+      this.loading = true
+
+      if(!this.priceAvailable) {
+        Toast.fail("价格不合法")
+        this.loading = false
+        return
+      }
+
+      if(!this.isFree){
+        if(Number(this.price) === 0.00){
+          Toast.fail("付费内容价格不能为0")
+          this.loading = false
+          return
+        }
+      }
+
+      if(this.title.length === 0 || this.title.length > 50) {
+        Toast.fail("标题不合法")
+        this.loading = false
+        return
+      }
+
+      if(this.imageCount > 10) {
+        Toast.fail("图片数量过多")
+        this.loading = false
+        return
+      }
+
       if(this.loginState) {
-        this.$request("/article/create?")
+        this.$request.post("/article/create?uid=" + this.user.userId + "&title=" + this.title + "&tags=0&isFree=" + this.isFree + "&price=" + this.price, {body:this.content}).then(
+          (res) => {
+            switch (res.stateEnum.state) {
+              case 0: {
+                Toast.success("文章信息发布成功")
+                let newAid = res.returnObject
+                let formData = new FormData();
+                formData.append("file", this.bannerList[0].file);
+                this.$request.post('/upload/articleBanner?uid=' + this.user.userId + "&aid=" + newAid, formData)
+                  .then(
+                      (res) => {
+                        switch (res.stateEnum.state) {
+                          case 0: {
+                            this.loading = false
+                            Toast.success("文章发布成功")
+                            this.$router.push("/member")
+                            return
+                          }
+                          case -1: {
+                            this.loading = false
+
+                            if(res.specificCode === 1) {
+                              Toast.fail("请求参数有误！")
+                              return
+                            } else if(res.specificCode === 2) {
+                              Toast.fail("用户不存在！")
+                              return
+                            } else if (res.specificCode === 3) {
+                              Toast.fail("文章不存在！")
+                              return
+                            } else {
+                              Toast.fail("未知错误！")
+                              return
+                            }
+                          }
+                          case -2: {
+                            this.loading = false
+                            Toast.fail("拒绝访问！")
+                            return
+                          }
+                          case 1: {
+                            this.loading = false
+                            Toast.fail("服务器出现错误！")
+                            break
+                          }
+                          default: {
+                            this.loading = false
+                            Toast.fail("文章Banner发布失败")
+                            return
+                          }
+                        }
+                      }
+                  )
+                break
+              }
+              case -1: {
+                this.loading = false
+
+                if(res.specificCode === 1) {
+                  Toast.fail("请求参数有误！")
+                  return
+                } else if(res.specificCode === 2) {
+                  Toast.fail("用户不存在！")
+                  return
+                } else if (res.specificCode === 3) {
+                  Toast.fail("无法进行此操作！")
+                  return
+                } else {
+                  Toast.fail("未知错误！")
+                  return
+                }
+              }
+              case 1: {
+                this.loading = false
+                Toast.fail("服务器出现错误！")
+                break
+              }
+              default: {
+                this.loading = false
+                break
+              }
+            }
+          },
+          () => {
+
+          }
+        )
       }
     },
     goBack: function () {
@@ -60,6 +207,13 @@ export default {
           this.$router.go(-1);
       },
   },
+  watch: {
+    isFree(newValue) {
+      if(newValue) {
+        this.price = "0.00"
+      }
+    },
+  },
   computed: {
     loginState() {
       return this.$store.getters.loginState
@@ -67,6 +221,15 @@ export default {
     user() {
       return this.$store.getters.user
     },
+    priceAvailable() {
+      let strings = this.price.split('.')
+      if(strings.length > 1 && strings[1].length > 2) {
+        return false
+      }
+
+      let n = Number(this.price)
+      return !(n < 0 || n > 99999.99);
+    }
   },
 };
 </script>
