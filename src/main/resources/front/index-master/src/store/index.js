@@ -114,6 +114,8 @@ const state = {
     avatarCached: false,
     avatarSrc: '',
     defaultAvatar: require('../assets/img/icon-me-n@2x.png'),
+    bannerArticleNotExist: require("../assets/article_not_exist.png"),
+    defaultBanner: require("../assets/default_banner.jpeg"),
     currentUser: {
       userId: 0,
       userName: "",
@@ -149,6 +151,12 @@ const getters = {
     } else {
       return state.defaultAvatar
     }
+  },
+  bannerArticleNotExistSrc(state) {
+    return state.bannerArticleNotExist
+  },
+  defaultBannerSrc(state) {
+    return state.defaultBanner
   }
 }
 

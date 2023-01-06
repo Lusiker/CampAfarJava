@@ -6,13 +6,13 @@ import {
   Button,
   Card,
   Cell,
-  CellGroup, Collapse, CollapseItem,
+  CellGroup, Col, Collapse, CollapseItem,
   Divider, Field,
   Grid,
   GridItem,
   Loading,
-  NoticeBar, Switch,
-  Tag, Uploader
+  NoticeBar, Row, Switch, Tab, Tabs,
+  Tag, Uploader, Image as VanImage
 } from 'vant';
 
 /* 1. 引入项目初始化样式 */
@@ -24,6 +24,7 @@ import "@/assets/styles/reset.css";
 import "lib-flexible";
 // 3. 引入请求库，并且挂在Vue 原型上面，以后每个Vue实例中，可以直接引用请求实例
 import instance from "@/api/instance";
+import vuetify from '@/vuetify';
 Vue.config.productionTip = false;
 Vue.prototype.$request = instance;
 // 配置全局前置导航守卫
@@ -83,10 +84,16 @@ Vue.use(NoticeBar)
   .use(CollapseItem)
   .use(Uploader)
   .use(Field)
-  .use(Switch);
+  .use(Switch)
+  .use(Col)
+  .use(Row)
+  .use(Tab)
+  .use(Tabs)
+  .use(VanImage);
 
 new Vue({
   router,
   store,
+  vuetify,
   render: (h) => h(App),
 }).$mount("#app");

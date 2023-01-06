@@ -38,11 +38,11 @@ const routes = [
     },
   },
   {
-    path: "/vod/detail",
-    name: "detail",
+    path: "/article/:aid",
+    name: "articleDetail",
     component: () => import("../views/DetailView.vue"),
     meta: {
-      title: "视频详情",
+      title: "文章详情",
     },
   },
   {
