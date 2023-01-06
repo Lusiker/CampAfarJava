@@ -3,6 +3,7 @@ package com.campfire.campafar.DTO;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Utils.DateProcessor;
+import com.campfire.campafar.Utils.FileProcessor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class UserInfoWrapper {
     private Integer userArticleCount;
     private Integer userFollowerCount;
     private Integer userFollowingCount;
+    private String userAvatar;
 
     public UserInfoWrapper(UserInfoWrapperBuilder builder) {
         this.userId = builder.getBUserId();
@@ -47,6 +49,7 @@ public class UserInfoWrapper {
         this.userArticleCount = builder.getBUserArticleCount();
         this.userFollowerCount = builder.getBUserFollowerCount();
         this.userFollowingCount = builder.getBUserFollowingCount();
+        this.userAvatar = builder.getBUserAvatar();
     }
 
     @Getter
@@ -69,6 +72,7 @@ public class UserInfoWrapper {
         private Integer bUserArticleCount;
         private Integer bUserFollowerCount;
         private Integer bUserFollowingCount;
+        private String bUserAvatar;
 
         public UserInfoWrapperBuilder setUser(User user) {
             this.user = user;
@@ -85,6 +89,21 @@ public class UserInfoWrapper {
             this.bUserExp = user.getUserExp();
             this.bUserIntroduction = user.getUserIntroduction();
             this.bUserHasActivated = user.getUserHasActivated();
+
+            return this;
+        }
+
+        public UserInfoWrapperBuilder setUserCardInfo() {
+            this.bUserId = user.getUserId();
+            this.bUserName = user.getUserName();
+            this.bUserEmail = user.getUserEmail();
+            this.bUserState = user.getUserState();
+
+            return this;
+        }
+
+        public UserInfoWrapperBuilder setUserAvatar() {
+            this.bUserAvatar = FileProcessor.getAvatarAsBase64(this.bUserId);
 
             return this;
         }
