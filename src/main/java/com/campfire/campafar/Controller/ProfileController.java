@@ -25,7 +25,7 @@ public class ProfileController {
     UserRepository userRepository;
     @Resource
     ObjectMapper objectMapper;
-    @PutMapping("/update")
+    @RequestMapping("/update")
     public String userUpdateInfo(@RequestParam(value = "userName",defaultValue = "")String newUserName,
                                  @RequestParam(value = "userEmail",defaultValue = "")String newUserEmail,
                                  @RequestParam(value = "userIntroduction",defaultValue = "")String newUserIntroduction,
@@ -60,7 +60,7 @@ public class ProfileController {
             //修改成功
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
     }
-    @PutMapping("password")//根据userId更新用户密码
+    @RequestMapping("password")//根据userId更新用户密码
     public String userCheckInfo(@RequestParam(value = "uid",defaultValue = "-1")Integer userId,
                                 @RequestParam(value = "oldPassword")String oldPassword,
                                 @RequestParam(value = "newPassword")String newPassword)throws JsonProcessingException{
