@@ -41,6 +41,10 @@
           <span class="un">设置密码</span><img src="../assets/img/icon-prev.png" class="arrow" />
         </div>
       </div>
+      <div class="group-item">
+        <van-divider/>
+        <van-button type="danger" block @click="logout">退出登录</van-button>
+      </div>
     </div>
   </div>
 </template>
@@ -74,6 +78,12 @@ export default {
   watch: {},
   //方法集合
   methods: {
+    logout(){
+      this.$store.dispatch('logout')
+      this.$router.push({
+        path: "/member",
+      })
+    },
     toBack: function () {
       this.$router.push({
         path: "/member",
