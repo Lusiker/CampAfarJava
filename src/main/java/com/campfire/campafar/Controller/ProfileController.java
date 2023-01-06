@@ -29,7 +29,7 @@ public class ProfileController {
     public String userUpdateInfo(@RequestParam(value = "userName",defaultValue = "")String newUserName,
                                  @RequestParam(value = "userEmail",defaultValue = "")String newUserEmail,
                                  @RequestParam(value = "userIntroduction",defaultValue = "")String newUserIntroduction,
-                                 @RequestParam(value = "userId",defaultValue = "-1")Integer userId)throws JsonProcessingException {
+                                 @RequestParam(value = "uid",defaultValue = "-1")Integer userId)throws JsonProcessingException {
         //userId为空
         if(userId==-1) {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
