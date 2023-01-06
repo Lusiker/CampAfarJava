@@ -1,5 +1,7 @@
 package com.campfire.campafar.Controller;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.campfire.campafar.DTO.UserInfoWrapper;
+import com.campfire.campafar.DTO.VisitorInfoWrapper;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Mapper.UserMapper;
@@ -9,9 +11,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 
 @Slf4j
@@ -25,6 +29,9 @@ public class ProfileController {
     UserRepository userRepository;
     @Resource
     ObjectMapper objectMapper;
+    /**
+    根据userId更新用户字段
+     **/
     @RequestMapping("/update")
     public String userUpdateInfo(@RequestParam(value = "userName",defaultValue = "")String newUserName,
                                  @RequestParam(value = "userEmail",defaultValue = "")String newUserEmail,
@@ -43,7 +50,7 @@ public class ProfileController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
 
-       //根据userId更新用户字段
+        //根据userId更新用户字段
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("user_id",userId);
         User user = new User();
@@ -60,7 +67,12 @@ public class ProfileController {
             //修改成功
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
     }
-    @RequestMapping("password")//根据userId更新用户密码
+
+
+    /**
+     根据userId更新用户密码
+     **/
+    @RequestMapping("password")
     public String userCheckInfo(@RequestParam(value = "uid",defaultValue = "-1")Integer userId,
                                 @RequestParam(value = "oldPassword")String oldPassword,
                                 @RequestParam(value = "newPassword")String newPassword)throws JsonProcessingException{
@@ -86,4 +98,50 @@ public class ProfileController {
         userRepository.updateUser(user);
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
     }
+
+    /**
+    忘记密码后设置新密码
+     **/
+    @RequestMapping("retrievePassword")
+    public String retrievePassword() throws JsonProcessingException {
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
+    }
+
+
+    /**
+     获取用户页面详情
+     **/
+    @RequestMapping
+    public String userInfo(@RequestParam(value = "uidFrom",defaultValue = "-1")Integer userIdFrom,
+                           @RequestParam(value = "uidTo",defaultValue = "-1")Integer userIdTo) throws JsonProcessingException {
+        if(userIdFrom==-1||userIdTo==-1) {
+            //userId为空
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+        User user = userRepository.selectUserById(userIdTo);
+
+        if (!userIdFrom.equals(userIdTo)) {
+            VisitorInfoWrapper wrapper;
+            wrapper = new VisitorInfoWrapper.VisitorInfoWrapperBuilder()
+                    .setUser(user)
+                    .setUserCommonInfo()
+                    .setArticleCount()
+                    .setFollowInfo()
+                    .setUserQuestionInfo()
+                    .build();;
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
+        }else{
+            UserInfoWrapper wrapper;
+            wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
+                    .setUser(user)
+                    .setUserCommonInfo()
+                    .setUserLoginInfo()
+                    .setArticleCount()
+                    .setFollowInfo()
+                    .setUserQuestionInfo()
+                    .build();
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
+        }
+    }
 }
+
