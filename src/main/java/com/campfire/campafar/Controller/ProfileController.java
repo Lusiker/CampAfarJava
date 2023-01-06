@@ -6,6 +6,7 @@ import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Mapper.UserMapper;
 import com.campfire.campafar.Repository.UserRepository;
+import com.campfire.campafar.Utils.InfoParser;
 import com.campfire.campafar.Utils.RequestResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,6 +100,7 @@ public class ProfileController {
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
     }
 
+
     /**
     忘记密码后设置新密码
      **/
@@ -114,9 +116,9 @@ public class ProfileController {
     @RequestMapping
     public String userInfo(@RequestParam(value = "uidFrom",defaultValue = "-1")Integer userIdFrom,
                            @RequestParam(value = "uidTo",defaultValue = "-1")Integer userIdTo) throws JsonProcessingException {
-        if(userIdFrom==-1||userIdTo==-1) {
+        if (userIdFrom == -1 || userIdTo == -1) {
             //userId为空
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
         }
         User user = userRepository.selectUserById(userIdTo);
 
@@ -128,9 +130,9 @@ public class ProfileController {
                     .setArticleCount()
                     .setFollowInfo()
                     .setUserQuestionInfo()
-                    .build();;
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
-        }else{
+                    .build();
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
+        } else {
             UserInfoWrapper wrapper;
             wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
                     .setUser(user)
@@ -140,8 +142,33 @@ public class ProfileController {
                     .setFollowInfo()
                     .setUserQuestionInfo()
                     .build();
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
         }
+    }
+
+
+    @RequestMapping("/cardInfo")
+    public String getUserCardInfo(@RequestParam(value = "uid",defaultValue = "")String uidStr) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if(user == null){
+            //目标用户不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        UserInfoWrapper wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
+                .setUser(user)
+                .setUserCardInfo()
+                .setUserLoginInfo()
+                .setUserAvatar()
+                .build();
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
+
     }
 }
 
