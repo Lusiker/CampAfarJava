@@ -43,17 +43,17 @@ public class ProfileController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
 
-        //根据userId更新用户字段
+       //根据userId更新用户字段
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("user_id",userId);
         User user = new User();
-        if (newUserEmail != null) {                         //设置新邮箱
+        if (!newUserEmail.equals("")) {                         //设置新邮箱
             user.setUserEmail(newUserEmail);
         }
-        if (newUserName != null) {                          //设置新用户名
+        if (!Objects.equals(newUserName, "")) {                          //设置新用户名
             user.setUserName(newUserName);
         }
-        if (newUserIntroduction != null) {                  //设置新简介
+        if (!newUserIntroduction.equals("")) {                  //设置新简介
             user.setUserIntroduction(newUserIntroduction);
         }
         userMapper.update(user, updateWrapper);
