@@ -3,6 +3,7 @@ package com.campfire.campafar.Repository;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.campfire.campafar.Entity.User;
+import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Mapper.UserMapper;
 import org.springframework.stereotype.Repository;
 
@@ -84,5 +85,16 @@ public class UserRepository {
         user.setTotalLogin(++loginCount);
 
         return updateUser(user);
+    }
+
+    public boolean activateUser(User user) {
+        UpdateWrapper<User> wrapper = new UpdateWrapper<User>()
+                .eq("user_id", user.getUserId())
+                .set("user_has_activated", true);
+        if(user.getUserState() == UserStateEnum.RESTRICTED) {
+            wrapper.set("user_state", UserStateEnum.NORMAL);
+        }
+
+        return userMapper.update(null, wrapper) == 1;
     }
 }
