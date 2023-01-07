@@ -152,7 +152,7 @@ public class FileProcessor {
         }
 
         String tree = doc.toString();
-        String result = tree.substring(tree.indexOf('"') + 1,tree.lastIndexOf('"') - 1);
+        String result = tree.substring(tree.indexOf('"') + 1,tree.lastIndexOf('"'));
         System.out.println(result);
 
         return result;
