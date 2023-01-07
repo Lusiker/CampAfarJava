@@ -11,6 +11,7 @@ import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Mapper.UserMapper;
 import com.campfire.campafar.Repository.UserRepository;
 import com.campfire.campafar.Service.ArticleService;
+import com.campfire.campafar.Utils.InfoParser;
 import com.campfire.campafar.Utils.RequestResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -201,6 +202,29 @@ public class ProfileController {
         articleService.page(pageInfo,queryWrapper);
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
+
+    @RequestMapping("/cardInfo")
+    public String getUserCardInfo(@RequestParam(value = "uid",defaultValue = "")String uidStr) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if (uid == null) {
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if (user == null) {
+            //目标用户不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        UserInfoWrapper wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
+                .setUser(user)
+                .setUserCardInfo()
+                .setUserLoginInfo()
+                .setUserAvatar()
+                .build();
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
     }
 }
 
