@@ -292,7 +292,7 @@ export default {
     }
   }
   div.box-body {
-    padding: 0.6667rem 0.4rem 0.1333rem 0.4rem;
+    padding: 0.15rem 0.4rem 0 0.4rem;
   }
   .navheader {
     position: fixed;
@@ -449,24 +449,6 @@ export default {
           border: none;
         }
       }
-      .captcha {
-        width: 90px;
-        height: 36px;
-        padding-top: 0px;
-        margin-left: 19px;
-        img {
-          width: 90px;
-          display: inline-block;
-          overflow: hidden;
-          position: relative;
-        }
-      }
     }
   }
-  </style>
-
-  <style>
-  #page {
-    background-color: #f8f8f8;
-  }
-  </style>
+</style>
