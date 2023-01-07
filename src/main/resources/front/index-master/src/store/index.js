@@ -24,7 +24,14 @@ const actions = {
     if(state.loginState){
       context.commit('CACHE_AVATAR',src)
     }
-  }
+  },
+
+  intercept(context, target){
+    context.commit('INTERCEPT',target)
+  },
+  resetIntercept(context){
+    context.commit('RESET_INTERCEPT')
+  },
 }
 
 const mutations = {
@@ -106,7 +113,14 @@ const mutations = {
   CACHE_AVATAR(state,src) {
     state.avatarCached = true
     state.avatarSrc = src
-  }
+  },
+
+  INTERCEPT(state,target){
+    state.interceptedTarget = target
+  },
+  RESET_INTERCEPT(state){
+    state.interceptedTarget = undefined
+  },
 }
 
 const state = {
@@ -132,7 +146,10 @@ const state = {
       userQuestionPrice: "0.00",
       lastLogin: new Date(),
       lastLoginString: "",
-    }
+    },
+
+    interceptedTarget: undefined,
+
 }
 
 const getters = {
@@ -157,7 +174,10 @@ const getters = {
   },
   defaultBannerSrc(state) {
     return state.defaultBanner
-  }
+  },
+  intercepted(state){
+    return state.interceptedTarget
+  },
 }
 
 export default new Vuex.Store({

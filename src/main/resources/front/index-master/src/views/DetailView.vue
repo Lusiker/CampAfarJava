@@ -33,6 +33,7 @@
         height="auto"
         tile
         border-radius="0px"
+        v-if="!this.articleNotExist"
     >
       <v-overlay
           :absolute="true"
@@ -83,7 +84,10 @@
     </v-tabs>
     <v-divider/>
     <div v-if="active === 1">
-      <div v-if="!articleLoaded">
+
+    </div>
+    <div v-else>
+      <div v-if="!articleLoaded && !articleNotExist">
         <van-col>
           <v-progress-circular
               :size="70"
@@ -94,8 +98,6 @@
           文章加载中
         </van-col>
       </div>
-    </div>
-    <div v-else>
       <v-sheet>
         <h1>{{article.articleTitle}}</h1>
         <v-divider/>
@@ -126,7 +128,8 @@ export default {
       articleLoaded: false,
       article: {},
       author: {},
-      commentText: ''
+      commentText: '',
+      articleNotExist: false,
     };
   },
   methods: {
@@ -183,6 +186,7 @@ export default {
       this.contentLoading = false
       this.content = '<div style="text-align: center"><strong>文章不存在</strong></div>'
       this.bannerSrc = this.$store.getters.bannerArticleNotExistSrc
+      this.articleNotExist = true
     } else {
       this.$request.get("/acquire/articleBanner?aid=" + this.articleId)
           .then(
@@ -218,6 +222,8 @@ export default {
                   }
                   default: {
                     Toast.fail("读取文章信息失败")
+                    this.articleLoaded = true
+                    this.articleNotExist = true
                   }
                 }
               }

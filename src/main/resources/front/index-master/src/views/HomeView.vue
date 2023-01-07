@@ -86,13 +86,11 @@ Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Lazyload);
 import KPBlank from "@/components/KPBlank.vue";
-import KPCourseItem from "@/components/KPCourseItem.vue";
 import KPFootNav from "@/components/kp-foot-nav.vue";
 export default {
   //import引入的组件需要注入到对象中才能使用
   components: {
     KPBlank,
-    KPCourseItem,
     "kp-foot-nav": KPFootNav,
   },
   data() {
@@ -132,9 +130,14 @@ export default {
   //方法集合
   methods: {
     topublish: function () {
-      this.$router.push({
-        path: "/publish",
-      });
+      if(!this.$store.getters.loginState){
+        this.$store.dispatch('intercept','publish')
+        this.$router.push('/login-password')
+      } else {
+        this.$router.push({
+          path: "/publish",
+        });
+      }
     },
     goToAllcourse: function () {
       this.$router.push({

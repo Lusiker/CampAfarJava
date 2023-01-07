@@ -153,10 +153,23 @@ export default {
                   this.$store.dispatch('login', res.returnObject)
 
                   // 强制跳转用户界面
-                  this.$router.push({
-                    path: '/member',
-                    replace: true
-                  })
+                  switch (this.$store.getters.intercepted){
+                    case 'publish': {
+                      this.$router.push({
+                        path: '/publish',
+                        replace: true
+                      })
+                      this.$store.dispatch('resetIntercept')
+                      break
+                    }
+                    default: {
+                      this.$router.push({
+                        path: '/member',
+                        replace: true
+                      })
+                      this.$store.dispatch('resetIntercept')
+                    }
+                  }
 
                   break
                 }

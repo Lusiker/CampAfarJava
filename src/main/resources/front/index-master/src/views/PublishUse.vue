@@ -202,9 +202,7 @@ export default {
       }
     },
     goBack: function () {
-          // window.history.go(-1)
-          // 表示返回上一页
-          this.$router.go(-1);
+        this.$router.push('/home');
       },
   },
   watch: {

@@ -1,13 +1,13 @@
-// es 中 import 语法，引入模块 Vue 核心库
 import Vue from 'vue';
-// vue-router 核心库
 import VueRouter from "vue-router";
-// 引入一个组件
 import HomeView from "../views/HomeView.vue";
-// vue 中一个插件
-// Vue.use(VueRouter)
 Vue.use(VueRouter);
 const routes = [
+  {
+    path: '/home',
+    name: "home",
+    redirect: '/'
+  },
   {
     path: "/",
     name: "home",
@@ -150,6 +150,10 @@ const routes = [
     meta: {
       title: "发布"
     }
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ];
 
