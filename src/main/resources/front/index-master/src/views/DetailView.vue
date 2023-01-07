@@ -191,7 +191,7 @@ export default {
                   case 0: {
                     this.bannerLoading = false
                     this.bannerSrc = res.returnObject
-                    if(this.bannerSrc.length === 0) {
+                    if(this.bannerSrc ===  null) {
                       this.bannerSrc = this.$store.getters.defaultBannerSrc
                     }
 
@@ -228,6 +228,9 @@ export default {
 </script>
 
 <style scoped>
+  .author-info {
+
+  }
   .title {
     font-size: 220px;
   }
@@ -258,6 +261,7 @@ export default {
     font-size: 10px;
   }
   .tabs {
+    padding-top: 10px;
     width: 100%;
   }
   .tab-text {

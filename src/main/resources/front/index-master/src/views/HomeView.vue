@@ -175,7 +175,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #f6f6f6;
+  background-color: #f3f6f9;
   overflow-x: hidden;
   overflow-y: scroll;
   padding-top: 0px;
@@ -252,6 +252,7 @@ export default {
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 10px;
+    border-radius: 15px;
     div.mask {
       position: fixed;
       z-index: 999;
@@ -388,6 +389,7 @@ export default {
     padding: 0.6667rem 0.4rem 0.1333rem 0.4rem;
     display: flex;
     flex-direction: column;
+    border-radius: 15px;
     div.section-box-title {
       width: 100%;
       height: 0.5067rem;

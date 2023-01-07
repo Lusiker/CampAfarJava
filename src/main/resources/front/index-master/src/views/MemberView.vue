@@ -62,6 +62,14 @@
               <div class="text">我的订单</div>
             </div>
           </div>
+          <div class="grid-item" @click="toMyArticle">
+            <div class="icon">
+              <div class="icon-img">
+                <img src="../assets/img/icon-list@2x.png" alt="" />
+              </div>
+              <div class="text">我的文章</div>
+            </div>
+          </div>
           <div class="grid-item" @click="toCode">
             <div class="icon">
               <div class="icon-img">
@@ -160,6 +168,11 @@ export default {
           path: "/login-password",
         });
       }
+    },
+    toMyArticle: function(){
+      this.$router.push({
+          path: "/myarticle",
+        });
     },
     tosetting: function () {
       this.$router.push({
