@@ -162,6 +162,14 @@ export default {
                       this.$store.dispatch('resetIntercept')
                       break
                     }
+                    case 'users': {
+                      this.$router.push({
+                        path: '/users',
+                        replace: true
+                      })
+                      this.$store.dispatch('resetIntercept')
+                      break
+                    }
                     default: {
                       this.$router.push({
                         path: '/member',
