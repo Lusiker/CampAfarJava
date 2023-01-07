@@ -137,7 +137,7 @@
 
             switch (res.stateEnum.state) {
               case 0: {
-                Toast.fail("注册成功，前往登录界面！")
+                Toast.success("注册成功，前往登录界面！")
                 this.$router.push('/login-password')
                 return
               }
