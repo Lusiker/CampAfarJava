@@ -152,10 +152,7 @@ public class FileProcessor {
         }
 
         String tree = doc.toString();
-        String result = tree.substring(tree.indexOf('"') + 1,tree.lastIndexOf('"'));
-        System.out.println(result);
-
-        return result;
+        return tree.substring(tree.indexOf('"') + 1,tree.lastIndexOf('"'));
     }
 
     public static boolean saveBanner(int aid, MultipartFile file) {
