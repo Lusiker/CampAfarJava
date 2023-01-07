@@ -54,6 +54,7 @@
           <span class="un">设置密码</span><img src="../assets/img/icon-prev.png" class="arrow" />
         </div>
       </div>
+
       <div class="group-item">
         <van-divider/>
         <van-button type="danger" block @click="logout">退出登录</van-button>
@@ -96,7 +97,7 @@
         <van-divider/>
         <van-row>
           <div><van-button
-              :disabled="newUserEmail.length ===0 || newUserEmail.length > 50"
+              :disabled="newUserEmail.length === 0 || newUserEmail.length > 50"
               :color="'#6598e5'"
               block
               @click="changeUserEmail"
@@ -132,7 +133,10 @@
         <van-row>
           <van-field label="输入激活码" v-model="activateCode">
             <template #button>
-              <van-button>获取激活码</van-button>
+              <van-button
+                :disabled="sendButtonDisabled"
+                @click="sendCode"
+              >{{sendButtonText}}</van-button>
             </template>
           </van-field>
         </van-row>
@@ -142,7 +146,7 @@
               :disabled="activateCode.length ===0 || activateCode.length > 4"
               :color="'#6598e5'"
               block
-              @click="sendCode"
+              @click="submitCode"
           >提交</van-button></div>
         </van-row>
       </van-col>
@@ -151,10 +155,24 @@
     <van-action-sheet v-model="showChangePasswordDrawer" title="更换密码">
       <van-col class="submit-button">
         <van-row>
-          <van-field label="输入新密码" type="password" v-model="newPassword"></van-field>
-          <van-field label="重复新密码" type="password" v-model="newPasswordRepeat"></van-field>
+          <van-field
+              v-model="oldPassword"
+              label="输入旧密码"
+              :type="showPassword ? 'text' : 'password'"
+              :right-icon="showPassword ? eyeSrc : eycClosedSrc"
+              @click-right-icon="showPassword = !showPassword"
+          />
+          <van-field
+              v-model="newPassword"
+              label="输入新密码"
+              :type="showPassword ? 'text' : 'password'"
+          />
+          <van-field
+              label="重复新密码"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="newPasswordRepeat"></van-field>
           <van-notice-bar
-              :text="'注意：密码长度2介于6到20之间（当前' + newPassword.length + ')'"
+              :text="'注意：密码长度介于6到20之间（当前' + newPassword.length + ')'"
               v-if="newPassword.length !== 0"
           />
         </van-row>
@@ -165,7 +183,7 @@
               :disabled="newPassword.length === 0 || newPassword !== newPasswordRepeat || newPassword.length > 20 || newPassword.length < 6"
               :color="'#6598e5'"
               block
-              @click="changeUserEmail"
+              @click="changePassword"
           >提交</van-button></div>
         </van-row>
       </van-col>
@@ -175,7 +193,7 @@
 </template>
 
 <script>
-import { Toast } from 'vant';
+import { Notify, Toast } from 'vant';
 
 export default {
   data() {
@@ -189,10 +207,16 @@ export default {
       newUserIntroduction: '',
       showActivateUserDrawer: false,
       showChangePasswordDrawer: false,
+      oldPassword: '',
       newPassword: '',
       newPasswordRepeat: '',
       activateCode: '',
-
+      codeSent: null,
+      countDown: 0,
+      intervalCountDown : null,
+      showPassword: false,
+      eyeSrc: require("../assets/eye.png"),
+      eycClosedSrc: require("../assets/eye-off.png")
     };
   },
   computed: {
@@ -204,15 +228,25 @@ export default {
     },
     avatarSrc() {
       return this.$store.getters.avatar
+    },
+    sendButtonDisabled() {
+      return this.user.userHasActivated || this.codeSent !== null;
+    },
+    sendButtonText() {
+      if(this.codeSent === null) {
+        return "发送"
+      } else {
+        return this.countDown
+      }
     }
   },
-  watch: {},
   methods: {
     toastUpdateFail() {
       Toast.fail("更新失败")
     },
     logout(){
       this.$store.dispatch('logout')
+      localStorage.removeItem("codeStart")
       this.$router.push({
         path: "/member",
       })
@@ -239,6 +273,11 @@ export default {
             (res) => {
               switch (res.stateEnum.state) {
                 case 0: {
+                  Notify({
+                    message: "用户名修改成功",
+                    duration: 2500,
+                    type: 'primary'
+                  })
                   this.$store.dispatch('changeUserName', this.newUserName)
                   this.newUserName = ''
                   this.showChangeNameDrawer = false
@@ -258,6 +297,11 @@ export default {
             (res) => {
               switch (res.stateEnum.state) {
                 case 0: {
+                  Notify({
+                    message: "邮箱修改成功",
+                    duration: 2500,
+                    type: 'primary'
+                  })
                   this.$store.dispatch('changeUserEmail', this.newUserEmail)
                   this.newUserEmail = ''
                   this.showChangeEmailDrawer = false
@@ -277,6 +321,11 @@ export default {
             (res) => {
               switch (res.stateEnum.state) {
                 case 0: {
+                  Notify({
+                    message: "个人简介修改成功",
+                    duration: 2500,
+                    type: 'primary'
+                  })
                   this.$store.dispatch('changeUserIntroduction', this.newUserIntroduction)
                   this.newUserIntroduction = ''
                   this.showChangeUserIntroductionDrawer = false
@@ -290,15 +339,243 @@ export default {
         )
       }
     },
-    requestActivateCode() {
+    sendCode() {
+      if(this.loginState) {
+        let now = new Date()
+        if (this.codeSent !== null) {
+          //仍保有发送时间
+          if (now.getTime() - this.codeSent.getTime() < 60000) {
+            //小于60秒
+            Toast.fail("请求过于频繁")
 
+            return
+          }
+        }
+
+        this.$request.post("/user/activate?uid=" + this.user.userId)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      Notify({
+                        message: "激活码发送成功，请注意查收",
+                        duration: 2500,
+                        type: 'primary'
+                      })
+
+                      return
+                    }
+                    case -1: {
+                      switch (res.specificCode) {
+                        case 1:{
+                          Toast.fail("请求参数有误")
+                          this.resetCountDown()
+                          return
+                        }
+                        case 2: {
+                          Toast.fail("用户不存在")
+                          this.resetCountDown()
+                          return
+                        }
+                        case 3: {
+                          Toast.fail("用户已激活")
+                          this.resetCountDown()
+                          return
+                        }
+                        default: {
+                          Toast.fail("未知错误")
+                          this.resetCountDown()
+                          return
+                        }
+                      }
+                    }
+                    case -3: {
+                      Toast.fail("请求过于频繁")
+                      this.resetCountDown()
+                      return
+                    }
+                    case 1: {
+                      Toast.fail("服务器错误")
+                      this.resetCountDown()
+                      return
+                    }
+                    default: {
+                      Toast.fail("未知错误")
+                      this.resetCountDown()
+                      return
+                    }
+                  }
+                }
+            )
+
+        //尚未发送或者已超过60秒
+        this.countDown = 60
+        this.codeSent = now
+        localStorage.setItem("codeStart", this.codeSent.getTime()
+            .toString())
+        this.intervalCountDown = setInterval(() => {
+          this.countDown = this.countDown - 1
+          if (this.countDown === 0) {
+            this.codeSent = null
+            this.countDown = 60
+            clearInterval(this.intervalCountDown)
+            this.intervalCountDown = null
+          }
+        }, 1000)
+      }
     },
-    verifyActivateCode() {
+    resetCountDown() {
+      this.codeSent = null
+      this.countDown = 60
+      clearInterval(this.intervalCountDown)
+      this.intervalCountDown = null
+      localStorage.removeItem("codeStart")
+    },
+    submitCode() {
+      if(this.loginState) {
+        if(this.activateCode.length !== 4) {
+          Toast.fail("验证码不合法")
 
+          return
+        }
+
+        this.$request.post("/user/checkActivate?uid=" + this.user.userId + "&code=" + this.activateCode)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      Notify({
+                        message: "用户激活成功",
+                        duration: 2500,
+                        type: 'primary'
+                      })
+                      this.$store.dispatch('updateUserActivationState')
+                      this.showActivateUserDrawer = false
+                      this.activateCode = ''
+
+                      return
+                    }
+                    case -1: {
+                      switch (res.specificCode) {
+                        case 1:{
+                          Toast.fail("请求参数有误")
+                          return
+                        }
+                        case 2: {
+                          Toast.fail("用户不存在")
+                          return
+                        }
+                        case 3: {
+                          Toast.fail("用户已激活")
+                          return
+                        }
+                        case 4: {
+                          Toast.fail("验证码错误")
+                          return
+                        }
+                        case 5: {
+                          Toast.fail("验证码未发送或已过期")
+                          return
+                        }
+                        default: {
+                          Toast.fail("未知错误")
+                          return
+                        }
+                      }
+                    }
+                    case 1: {
+                      Toast.fail("服务器错误")
+                      return
+                    }
+                    default: {
+                      Toast.fail("未知错误")
+                      return
+                    }
+                  }
+                }
+            )
+      }
+    },
+    changePassword() {
+      if(this.loginState) {
+        if(this.newPassword.length < 6 || this.newPassword.length > 20 || this.newPassword !== this.newPasswordRepeat) {
+          Toast.fail("输入有误")
+
+          return
+        }
+
+        this.$request.post("/user/password?uid=" + this.user.userId + "&oldPassword=" + this.oldPassword + "&newPassword=" + this.newPassword)
+            .then(
+                (res) => {
+                  switch(res.stateEnum.state) {
+                    case 0: {
+                      Notify({
+                        message: "修改成功",
+                        duration: 2500,
+                        type: 'primary'
+                      })
+                      this.showChangePasswordDrawer = false
+
+                      return
+                    }
+                    case -1: {
+                      switch (res.specificCode) {
+                        case 1: {
+                          Toast.fail("参数有误")
+                          return
+                        }
+                        case 2: {
+                          Toast.fail("旧密码错误")
+                          return
+                        }
+                        case 3: {
+                          Toast.fail("用户不存在或已注销")
+                          return
+                        }
+                        default: {
+                          Toast.fail("未知错误")
+                          return
+                        }
+                      }
+                    }
+                    case 1: {
+                      Toast.fail("服务器错误")
+                      return
+                    }
+                    default: {
+                      Toast.fail("未知错误")
+                      return
+                    }
+                  }
+                }
+            )
+      }
     }
   },
-  //生命周期 - 挂载完成（可以访问DOM元素）
   mounted() {
+    let prevTime = Number(localStorage.getItem("codeStart"))
+    if(prevTime !== null) {
+      let now = new Date()
+      this.countDown = 60 - Math.round(((now.getTime() - prevTime) / 1000))
+      if(this.countDown > 0) {
+        this.codeSent = new Date(prevTime)
+        this.intervalCountDown = setInterval(() => {
+          this.countDown = this.countDown - 1
+          if (this.countDown === 0) {
+            this.codeSent = null
+            this.countDown = 60
+            clearInterval(this.intervalCountDown)
+            this.intervalCountDown = null
+          }
+        },1000)
+      } else{
+        this.codeSent = null
+        this.countDown = 0
+        this.intervalCountDown = null
+        localStorage.removeItem("codeStart")
+      }
+    }
+
     if(this.loginState) {
       if (!this.$store.getters.avatarHasCached) {
         this.$request.get('/acquire/avatar?uid=' + this.user.userId)
@@ -322,15 +599,14 @@ export default {
       } else {
         this.avatarLoading = false
       }
+    } else {
+      this.$store.dispatch('intercept', 'users')
+      this.$router.push('/login-password')
     }
   },
-  beforeCreate() {}, //生命周期 - 创建之前
-  beforeMount() {}, //生命周期 - 挂载之前
-  beforeUpdate() {}, //生命周期 - 更新之前
-  updated() {}, //生命周期 - 更新之后
-  beforeDestroy() {}, //生命周期 - 销毁之前
-  destroyed() {}, //生命周期 - 销毁完成
-  activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
+  beforeDestroy() {
+    clearInterval(this.intervalCountDown)
+  },
 };
 </script>
 <style lang="less" scoped>
