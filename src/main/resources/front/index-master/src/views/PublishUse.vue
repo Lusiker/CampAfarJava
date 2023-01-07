@@ -127,7 +127,7 @@ export default {
                           case 0: {
                             this.loading = false
                             Toast.success("文章发布成功")
-                            this.$router.push("/member")
+                            this.$router.push("/article/" + res.returnObject)
                             return
                           }
                           case -1: {
