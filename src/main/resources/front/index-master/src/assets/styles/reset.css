@@ -8,7 +8,6 @@
 
 html,
 body {
-  overflow: hidden;
   height: 100%;
 }
 
@@ -31,32 +30,7 @@ body {
   font-family: PingFangSC-Regular, Hiragino Sans GB, sans-serif;
 }
 
-ul,
-ol,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-figure,
-form,
-fieldset,
-legend,
-input,
-textarea,
-button,
-p,
-blockquote,
-th,
-td,
-pre,
-xmp {
-  margin: 0;
-  padding: 0;
-}
+
 
 input,
 textarea,
@@ -72,20 +46,6 @@ samp {
   font-family: inherit;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-small,
-big,
-input,
-textarea,
-button,
-select {
-  font-size: inherit;
-}
 
 address,
 cite,
