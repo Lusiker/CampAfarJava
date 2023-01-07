@@ -118,8 +118,10 @@ public class FileProcessor {
             }
         }
 
+        rawArticle = rawArticle.replaceAll("\\\\\"", "\"");
         Document doc = Jsoup.parse(rawArticle);
         Elements images = doc.select("img");
+
         int imageCount = 1;
         String currentSrc;
         String filename;
@@ -136,7 +138,7 @@ public class FileProcessor {
             try {
                 //创建文件输入流
                 out = new FileOutputStream(folder.getAbsolutePath() + "\\" + filename);
-                out.write(decoder. decode(infos[1].getBytes()));
+                out.write(decoder.decode(infos[1].getBytes()));
                 out.close();
             } catch (IOException e) {
                 return null;
@@ -151,6 +153,7 @@ public class FileProcessor {
 
         String tree = doc.toString();
         String result = tree.substring(tree.indexOf('"') + 1,tree.lastIndexOf('"') - 1);
+        System.out.println(result);
 
         return result;
     }
