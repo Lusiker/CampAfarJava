@@ -149,7 +149,6 @@ export default {
               switch (res.stateEnum.state) {
                 case 0: {
                   Toast.fail("登录成功！")
-                  console.log(res, res.returnObject);
                   this.$store.dispatch('login', res.returnObject)
 
                   // 强制跳转用户界面
