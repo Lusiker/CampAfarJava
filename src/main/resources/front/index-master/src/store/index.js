@@ -35,6 +35,11 @@ const actions = {
       context.commit("CHANGE_USER_INTRODUCTION",newUserIntroduction)
     }
   },
+  updateUserActivationState(context) {
+    if(state.loginState) {
+      context.commit("UPDATE_USER_ACTIVATION_STATE")
+    }
+  },
 
   cacheAvatar(context,src) {
     if(state.loginState){
@@ -78,6 +83,9 @@ const mutations = {
 
   LOGOUT(state) {
     state.loginState = false
+
+    state.avatarCached = false
+    state.avatarSrc = ''
 
     state.currentUser = {
       userId: 0,
@@ -137,6 +145,15 @@ const mutations = {
   CHANGE_USER_INTRODUCTION(state, newUserIntroduction) {
     state.currentUser.userIntroduction = newUserIntroduction
     sessionStorage.setItem('userIntroduction',newUserIntroduction)
+  },
+  UPDATE_USER_ACTIVATION_STATE(state) {
+    state.currentUser.userHasActivated = true
+    sessionStorage.setItem('userHasActivated',true.toString())
+
+    if(state.currentUser.userState === "RESTRICTED") {
+      state.currentUser.userState = "NORMAL"
+      sessionStorage.setItem('userState',"NORMAL")
+    }
   },
 
   CACHE_AVATAR(state,src) {
