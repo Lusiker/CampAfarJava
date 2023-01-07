@@ -5,7 +5,6 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/home',
-    name: "home",
     redirect: '/'
   },
   {
