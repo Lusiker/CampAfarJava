@@ -96,20 +96,27 @@ public class ProfileController {
     public String userCheckInfo(@RequestParam(value = "uid",defaultValue = "-1")Integer userId,
                                 @RequestParam(value = "oldPassword")String oldPassword,
                                 @RequestParam(value = "newPassword")String newPassword)throws JsonProcessingException{
-        User user = userRepository.selectUserById(userId);
-        if(newPassword.length() > 20){
-            //密码参数错误
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
-        }
-        //将上传的旧密码进行md5加密
-        oldPassword = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
         if(userId==-1) {
             //userId为空
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
+
+        if(newPassword.length() > 20){
+            //密码参数错误
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(userId);
+        if(user == null){
+            //目标用户不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        }
+        //将上传的旧密码进行md5加密
+        oldPassword = DigestUtils.md5DigestAsHex(oldPassword.getBytes());
+
         if (!oldPassword.equals(user.getUserPassword())) {
             //旧密码不一致
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,2,null));
         }
         //将上传的新密码进行md5加密
         newPassword = DigestUtils.md5DigestAsHex(newPassword.getBytes());
@@ -156,7 +163,7 @@ public class ProfileController {
                     .setArticleCount()
                     .setFollowInfo()
                     .setUserQuestionInfo()
-                    .build();;
+                    .build();
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
         }else{
             UserInfoWrapper wrapper;
