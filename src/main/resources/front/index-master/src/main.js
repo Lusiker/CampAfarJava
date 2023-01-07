@@ -19,7 +19,6 @@ import {
 /* 1.1 @ 脚手架项目别称，代表 src目录
    1.2 webpack 处理
 */
-import "@/assets/styles/reset.css";
 /* 2. 引入移动端适配库 lib-flexible */
 import "lib-flexible";
 // 3. 引入请求库，并且挂在Vue 原型上面，以后每个Vue实例中，可以直接引用请求实例
