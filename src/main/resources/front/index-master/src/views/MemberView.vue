@@ -119,7 +119,7 @@ export default {
     },
     userState() {
       switch (this.$store.getters.user.userState){
-        case "RESTRICTED": return "受限制(尚未激活)"
+        case "RESTRICTED": return "受限制"
         case "NORMAL": return "正常"
         case "BANNED": return "被封禁"
         case "LOGOFF": return "已注销"
