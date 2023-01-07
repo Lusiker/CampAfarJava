@@ -17,14 +17,6 @@ const routes = [
     },
   },
   {
-    path: "/vod",
-    name: "vod",
-    component: () => import("../views/VodView.vue"),
-    meta: {
-      title: "全部视频",
-    },
-  },
-  {
     path: "/login-password",
     name: "login-password",
     component: () => import("../views/LoginPasswordView.vue"),
@@ -41,9 +33,9 @@ const routes = [
     },
   },
   {
-    path: "/study",
-    name: "study",
-    component: () => import("../views/StudyView.vue"),
+    path: "/question",
+    name: "question",
+    component: () => import("../views/QuestionListView.vue"),
     meta: {
       title: "问答",
     },
@@ -118,14 +110,7 @@ const routes = [
       title: "用户中心",
     },
   },
-  {
-    path: "/vipcenter",
-    name: "vipcenter",
-    component: () => import("../views/VipcenterView.vue"),
-    meta: {
-      title: "VIP会员",
-    },
-  },
+
   {
     path: "/order",
     name: "order",
@@ -135,12 +120,11 @@ const routes = [
     },
   },
   {
-    path: "/video",
-    name: "video",
-    component: () => import("../views/VideoView.vue"),
+    path: "/myarticle",
+    name: "myarticle",
+    component: () => import("../views/MyArticleView.vue"),
     meta: {
-      title: "视频",
-      auth: true,
+      title: "我的文章",
     },
   },
   {
