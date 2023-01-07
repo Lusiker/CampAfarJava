@@ -237,7 +237,6 @@ export default {
   .dialog-content {
     height: 100%;
     width: 100%;
-    overflow: scroll;
   }
   .dialog >>> img,p,span {
     width: 100%;

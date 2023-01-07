@@ -63,14 +63,11 @@ Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Lazyload);
 import KPBlank from "@/components/KPBlank.vue";
-import KPQuestionItem from "@/components/KPQuestionItem.vue";
-
 import KPFootNav from "@/components/kp-foot-nav.vue";
 export default {
   //import引入的组件需要注入到对象中才能使用
   components: {
     KPBlank,
-    KPQuestionItem,
     "kp-foot-nav": KPFootNav,
   },
   data() {

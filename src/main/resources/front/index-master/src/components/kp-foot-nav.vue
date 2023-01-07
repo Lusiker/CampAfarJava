@@ -12,8 +12,8 @@
       <img v-else src="@/assets/img/icon-study-n@2x.png" alt="" /><span>知识</span>
     </div>
 
-    <div class="item" @click.stop="handleClick('study')">
-      <img v-if="type === 'study'" src="@/assets/img/马上提问2.png" alt="" />
+    <div class="item" @click.stop="handleClick('question')">
+      <img v-if="type === 'question'" src="@/assets/img/马上提问2.png" alt="" />
       <img v-else src="@/assets/img/马上提问1.png" alt="" /><span>问答</span>
     </div>
 

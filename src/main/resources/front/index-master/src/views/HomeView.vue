@@ -14,7 +14,7 @@
         </van-swipe-item>
       </van-swipe>
     </div>
-    <div class="navs">
+    <!-- <div class="navs">
       <div
         :navs="navs"
         @click.stop="goToDetail(item)"
@@ -25,7 +25,7 @@
         <img :src="item.src" alt="" />
         <span class="name">{{ item.name }}</span>
       </div>
-    </div>
+    </div> -->
     <div class="blank">
       <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
     </div>
@@ -99,7 +99,7 @@ export default {
     //这里存放数据
     return {
       blocks: [],
-      slides: [],
+      slides: [{src:require('../assets/img/1.jpg')}, {src:require('../assets/img/2.jpg')}, {src:require('../assets/img/3.jpg')}],
       navs: [],
       blank: {},
       h5GzhV1: [],
@@ -209,7 +209,7 @@ export default {
     width: 100%;
     margin-top: 0;
     padding: 0.2667rem 0.4rem;
-    height: 3.6rem;
+    height: 4.5rem;
     overflow: hidden;
     background: #fff;
     a {
@@ -217,7 +217,8 @@ export default {
     }
     img {
       width: 100%;
-      height: 3.0667rem;
+      // height: 3.0667rem;
+      height: 100%;
     }
   }
   .navs {
