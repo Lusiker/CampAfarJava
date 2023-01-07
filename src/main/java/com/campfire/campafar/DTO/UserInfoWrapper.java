@@ -98,6 +98,7 @@ public class UserInfoWrapper {
             this.bUserName = user.getUserName();
             this.bUserEmail = user.getUserEmail();
             this.bUserState = user.getUserState();
+            this.bUserIntroduction = user.getUserIntroduction();
 
             return this;
         }
