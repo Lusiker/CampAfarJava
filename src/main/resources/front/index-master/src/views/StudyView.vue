@@ -95,18 +95,6 @@ export default {
       });
     },
   },
-  //生命周期 - 创建完成（可以访问当前this实例）
-  async created() {
-    this.token = localStorage.getItem("h5-token");
-    let res = await this.$request.get(
-      "http://1.14.239.98/api/v2/member/courses?type=vod&page=1&size=10&loading=true"
-    );
-    this.subscriptions = res.data.data;
-    let resData = await this.$request.get(
-      "http://1.14.239.98/api/v2/member/courses/like?type=vod&page=1&size=10&loading=true"
-    );
-    this.collects = resData.data.data;
-  },
   //生命周期 - 挂载完成（可以访问DOM元素）
   mounted() {},
   beforeCreate() {}, //生命周期 - 创建之前
