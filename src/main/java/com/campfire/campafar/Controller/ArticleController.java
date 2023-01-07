@@ -37,7 +37,7 @@ public class ArticleController {
                                 @RequestBody String body) throws JsonProcessingException {
         Integer uid = InfoParser.parseInt(uidStr);
         if(uid == null){
-            //用户名无效
+            //用户id无效
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
 
@@ -106,5 +106,39 @@ public class ArticleController {
         }
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, article.getArticleId()));
+    }
+
+    @RequestMapping("/article")
+    public String getArticleInfo(@RequestParam(value = "uid", defaultValue = "")String uidStr,
+                                 @RequestParam(value = "aid", defaultValue = "")String aidStr) throws JsonProcessingException {
+        //目前无法检测购买
+
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        Integer aid = InfoParser.parseInt(aidStr);
+        if(aid == null) {
+            //文章id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        if(!uid.equals(0)) {
+            User user = userRepository.selectUserById(uid);
+            if (user == null) {
+                //目标用户不存在
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+            }
+        }
+
+        Article article = articleRepository.selectArticleById(aid);
+        if(article == null) {
+            //文章不存在或已删除
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        }
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
     }
 }
