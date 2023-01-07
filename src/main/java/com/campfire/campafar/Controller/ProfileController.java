@@ -1,12 +1,16 @@
 package com.campfire.campafar.Controller;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campfire.campafar.DTO.UserInfoWrapper;
 import com.campfire.campafar.DTO.VisitorInfoWrapper;
+import com.campfire.campafar.Entity.Article;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Mapper.UserMapper;
 import com.campfire.campafar.Repository.UserRepository;
-import com.campfire.campafar.Utils.InfoParser;
+import com.campfire.campafar.Service.ArticleService;
 import com.campfire.campafar.Utils.RequestResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,6 +104,13 @@ public class ProfileController {
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
     }
 
+    /**
+     忘记密码
+     **/
+    @RequestMapping("forgetPassword")
+    public String forgetPassword(@RequestParam(value = "uid",defaultValue="")Integer userId) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,null));
+    }
 
     /**
     忘记密码后设置新密码
@@ -116,9 +127,9 @@ public class ProfileController {
     @RequestMapping
     public String userInfo(@RequestParam(value = "uidFrom",defaultValue = "-1")Integer userIdFrom,
                            @RequestParam(value = "uidTo",defaultValue = "-1")Integer userIdTo) throws JsonProcessingException {
-        if (userIdFrom == -1 || userIdTo == -1) {
+        if(userIdFrom==-1||userIdTo==-1) {
             //userId为空
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
         User user = userRepository.selectUserById(userIdTo);
 
@@ -130,9 +141,9 @@ public class ProfileController {
                     .setArticleCount()
                     .setFollowInfo()
                     .setUserQuestionInfo()
-                    .build();
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
-        } else {
+                    .build();;
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
+        }else{
             UserInfoWrapper wrapper;
             wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
                     .setUser(user)
@@ -142,33 +153,54 @@ public class ProfileController {
                     .setFollowInfo()
                     .setUserQuestionInfo()
                     .build();
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
         }
     }
 
+    /******************
+     获取用户分页的数据列表
+     *****************/
+    int pageSize = 10;           //每页放10条数据
+    /**
+     分页的文章列表
+     **/
+    @Autowired
+    private ArticleService articleService;
+    @RequestMapping("getArticles")
+    public String getArticles(@RequestParam(value = "uidFrom",defaultValue = "-1")Integer userIdFrom,
+                              @RequestParam(value = "uidTo",defaultValue = "-1")Integer userIdTo,
+                              @RequestParam(value = "page",defaultValue = "3")Integer page,//第几页
+                              @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy)throws JsonProcessingException{
 
-    @RequestMapping("/cardInfo")
-    public String getUserCardInfo(@RequestParam(value = "uid",defaultValue = "")String uidStr) throws JsonProcessingException {
-        Integer uid = InfoParser.parseInt(uidStr);
-        if(uid == null){
-            //用户id无效
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+
+        //构造分页构造器
+        Page pageInfo = new Page(page,pageSize);
+
+        //构造条件构造器
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
+        if (!Objects.equals(userIdFrom, userIdTo)){
+            queryWrapper.eq(Article::getUserId,userIdTo)
+                    .select(Article::getArticleTitle,Article::getArticleCreatedAt,Article::getArticleTag,Article::getArticleIsFree,Article::getArticlePrice,Article::getArticleDetail);
+        }else{
+            queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(userIdTo)),Article::getUserId,userIdTo);
         }
-
-        User user = userRepository.selectUserById(uid);
-        if(user == null){
-            //目标用户不存在
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        //添加排序条件
+        if (orderBy == 0){
+            queryWrapper.orderByAsc(Article::getArticleId);
         }
+        if (orderBy == 1){
+            queryWrapper.orderByDesc(Article::getArticleId);
+        }
+        if (orderBy == 2){
+            queryWrapper.orderByAsc(Article::getArticleViewCount);
+        }
+        if (orderBy == 3){
+            queryWrapper.orderByDesc(Article::getArticleViewCount);
+        }
+        //执行查询
+        articleService.page(pageInfo,queryWrapper);
 
-        UserInfoWrapper wrapper = new UserInfoWrapper.UserInfoWrapperBuilder()
-                .setUser(user)
-                .setUserCardInfo()
-                .setUserLoginInfo()
-                .setUserAvatar()
-                .build();
-        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,wrapper));
-
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
     }
 }
 
