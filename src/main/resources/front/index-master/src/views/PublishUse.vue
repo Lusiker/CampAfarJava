@@ -54,14 +54,18 @@
 
     <div class="box-body">
       <van-divider/>
-      <van-button type="info" block @click="submitArticle">提交</van-button>
+      <van-button
+          type="info"
+          block
+          :disabled="user.userState !=='NORMAL'"
+          @click="submitArticle">提交</van-button>
     </div>
   </div>
 </template>
 
 <script>
 import { VueEditor } from "vue2-editor";
-import { Toast } from 'vant';
+import { Notify, Toast } from 'vant';
 
 export default {
   components: { VueEditor, Toast },
@@ -211,6 +215,14 @@ export default {
         this.price = "0.00"
       }
     },
+  },
+  mounted() {
+    if(this.$store.getters.user.userState === "RESTRICTED") {
+      Notify({
+        message: '您尚未验证邮箱，无法发表文章',
+        duration: 3500,
+      })
+    }
   },
   computed: {
     loginState() {
