@@ -7,11 +7,6 @@ import HomeView from "../views/HomeView.vue";
 // vue 中一个插件
 // Vue.use(VueRouter)
 Vue.use(VueRouter);
-const originalPush = VueRouter.prototype.push;
-// 修改 原型对象中的push方法
-VueRouter.prototype.push = function push(location) {
-  return originalPush.call(this, location).catch((err) => err);
-};
 const routes = [
   {
     path: "/",
