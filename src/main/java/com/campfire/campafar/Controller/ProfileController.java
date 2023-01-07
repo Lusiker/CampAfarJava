@@ -6,13 +6,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campfire.campafar.DTO.UserInfoWrapper;
 import com.campfire.campafar.DTO.VisitorInfoWrapper;
 import com.campfire.campafar.Entity.Article;
+import com.campfire.campafar.Entity.Record;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
+import com.campfire.campafar.Enum.RecordTypeEnum;
+import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Mapper.UserMapper;
+import com.campfire.campafar.Repository.RecordRepository;
 import com.campfire.campafar.Repository.UserRepository;
 import com.campfire.campafar.Service.ArticleService;
 import com.campfire.campafar.Utils.InfoParser;
+import com.campfire.campafar.Utils.MailProcessor;
 import com.campfire.campafar.Utils.RequestResult;
+import com.campfire.campafar.Utils.TempInfoGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +27,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Objects;
 
 
@@ -34,7 +41,14 @@ public class ProfileController {
     @Resource
     UserRepository userRepository;
     @Resource
+    RecordRepository recordRepository;
+    @Resource
     ObjectMapper objectMapper;
+    @Resource
+    MailProcessor processor;
+
+    private final int activateCodeExpireTime = 5 * 60 * 1000;
+
     /**
     根据userId更新用户字段
      **/
@@ -225,6 +239,120 @@ public class ProfileController {
                 .setUserAvatar()
                 .build();
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, wrapper));
+    }
+
+    @RequestMapping("/activate")
+    public String requestActivateCode(@RequestParam(value = "uid")String uidStr) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if(user == null || user.getUserState() == UserStateEnum.LOGOFF){
+            //目标用户不存在或已注销
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        if(user.getUserHasActivated()) {
+            //用户已激活，无法再次请求
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        }
+
+        //查询先前请求记录
+        Record prevRecord = recordRepository.selectRecordWithUidAndType(user.getUserId(),RecordTypeEnum.ACTIVATION);
+        //记录当前时间
+        Date now = new Date();
+        if(prevRecord == null) {
+            //记录不存在
+            //生成随机的四位激活码
+            String tempCode = TempInfoGenerator.getRandomFourDigitNumber(now.getTime());
+            Record newRecord = new Record(user.getUserId(), RecordTypeEnum.ACTIVATION, tempCode);
+            //创建记录到数据库
+            if(!recordRepository.insertRecord(newRecord)) {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
+            }
+
+            //发送邮件，返回成功状态
+            processor.sendRegistryCode(tempCode, user.getUserName(), user.getUserEmail(), uid);
+        } else {
+            if(now.getTime() - prevRecord.getCreatedAt().getTime() < 6000) {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.REQUEST_TOO_FREQUENT, 0, null));
+            }
+
+            //记录存在但已超过一分钟
+            //生成随机的四位激活码
+            //更新验证码和创建时间
+            String tempCode = TempInfoGenerator.getRandomFourDigitNumber(now.getTime());
+            prevRecord.setRecordCode(tempCode);
+            prevRecord.setCreatedAt(now);
+
+            if(!recordRepository.updateRecord(prevRecord)) {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
+            }
+
+            //发送邮件，返回成功状态
+            processor.sendRegistryCode(tempCode, user.getUserName(), user.getUserEmail(), uid);
+        }
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, null));
+    }
+
+    @RequestMapping("/checkActivate")
+    public String checkActivateCode(@RequestParam(value = "uid",defaultValue = "")String uidStr,
+                                    @RequestParam(value = "code")String code) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        if(code.isEmpty() || code.length() > 4) {
+            //验证法不合法
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if(user == null || user.getUserState() == UserStateEnum.LOGOFF){
+            //目标用户不存在或已注销
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        if(user.getUserHasActivated()) {
+            //用户已激活
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        }
+
+        //查找记录
+        Record record = recordRepository.selectRecordWithUidAndType(user.getUserId(),RecordTypeEnum.ACTIVATION);
+        if(record == null) {
+            //激活码未发送
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 5, null));
+        }
+
+        Date now = new Date();
+        if(now.getTime() - record.getCreatedAt().getTime() > activateCodeExpireTime) {
+            //激活码已超时
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 5, null));
+        }
+
+        if(code.equals(record.getRecordCode())){
+            //激活用户
+            if(!userRepository.activateUser(user)) {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
+            }
+            //删除旧记录
+            if(!recordRepository.deleteRecord(record)) {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
+            }
+
+            //激活成功
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, null));
+        }
+
+        //激活码错误
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 4, null));
     }
 }
 
