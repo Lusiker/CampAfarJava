@@ -20,6 +20,22 @@ const actions = {
     }
   },
 
+  changeUserName(context, newUserName) {
+    if(state.loginState) {
+      context.commit("CHANGE_USERNAME",newUserName)
+    }
+  },
+  changeUserEmail(context, newUserEmail) {
+    if(state.loginState) {
+      context.commit("CHANGE_USER_EMAIL",newUserEmail)
+    }
+  },
+  changeUserIntroduction(context, newUserIntroduction) {
+    if(state.loginState) {
+      context.commit("CHANGE_USER_INTRODUCTION",newUserIntroduction)
+    }
+  },
+
   cacheAvatar(context,src) {
     if(state.loginState){
       context.commit('CACHE_AVATAR',src)
@@ -108,6 +124,19 @@ const mutations = {
         userQuestionOpen: Boolean(sessionStorage.getItem('userQuestionOpen')),
       }
     }
+  },
+
+  CHANGE_USERNAME(state, newUserName) {
+    state.currentUser.userName = newUserName
+    sessionStorage.setItem('userName',newUserName)
+  },
+  CHANGE_USER_EMAIL(state, newUserEmail) {
+    state.currentUser.userEmail = newUserEmail
+    sessionStorage.setItem('userEmail',newUserEmail)
+  },
+  CHANGE_USER_INTRODUCTION(state, newUserIntroduction) {
+    state.currentUser.userIntroduction = newUserIntroduction
+    sessionStorage.setItem('userIntroduction',newUserIntroduction)
   },
 
   CACHE_AVATAR(state,src) {
