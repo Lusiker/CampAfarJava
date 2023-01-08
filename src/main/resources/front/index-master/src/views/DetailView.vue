@@ -113,6 +113,7 @@
             elevation="5"
         >
           <h1>{{article.articleTitle}}</h1>
+          <v-divider/>
           <h3>创建于:{{createdAt}}</h3>
           <h3>浏览量:{{article.articleViewCount}}</h3>
         </v-card>
