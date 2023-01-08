@@ -15,12 +15,6 @@
               class="input-text"
               placeholder="请输入邮箱"
             />
-            <img
-                @click.stop="clearEmail"
-                v-show="loginForm.email"
-                src="@/assets/img/new/close.png"
-                style="width: 16px; height: 16px"
-            />
           </div>
           <div v-else>
             <input
@@ -28,23 +22,16 @@
                 class="input-text"
                 placeholder="请输入用户名"
             />
-            <img
-                @click.stop="clearUsername"
-                v-show="loginForm.username"
-                src="@/assets/img/new/close.png"
-                style="width: 16px; height: 16px"
-            />
+          </div>
+          <div class="item" @click.stop="changeMethod">
+            <van-tag plain type="primary">
+              <img
+                  :src="loginMethod ? emailIcon : usernameIcon"
+                  style="width: 16px; height: 16px"
+              />
+            </van-tag>
           </div>
         </div>
-      </div>
-      <div class="item" @click.stop="changeMethod">
-        <van-tag plain type="primary">
-          更换登录方式&nbsp;&nbsp;
-          <img
-              :src="loginMethod ? emailIcon : usernameIcon"
-              style="width: 16px; height: 16px"
-          />
-        </van-tag>
       </div>
       <div class="item">
         <div class="name">密码</div>
@@ -235,15 +222,7 @@ export default {
       }
     },
     goBack: function () {
-      // window.history.go(-1)
-      // 表示返回上一页
       this.$router.go(-1);
-    },
-    clearEmail: function () {
-      this.loginForm.email = "";
-    },
-    clearUsername: function () {
-      this.loginForm.username = ""
     },
     clearPassword: function () {
       this.loginForm.password = "";
