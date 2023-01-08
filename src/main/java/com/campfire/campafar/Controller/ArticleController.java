@@ -1,16 +1,20 @@
 package com.campfire.campafar.Controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campfire.campafar.Entity.Article;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Repository.ArticleRepository;
 import com.campfire.campafar.Repository.UserRepository;
+import com.campfire.campafar.Service.ArticleService;
 import com.campfire.campafar.Utils.FileProcessor;
 import com.campfire.campafar.Utils.InfoParser;
 import com.campfire.campafar.Utils.RequestResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +31,51 @@ public class ArticleController {
     UserRepository userRepository;
     @Resource
     ObjectMapper objectMapper;
+    @Autowired
+    private ArticleService articleService;
+
+
+    int pageSize = 10;
+    /**
+     * 文章分页列表
+     * **/
+    @RequestMapping("/articles")
+    public String ArticleList(@RequestParam(value = "page",defaultValue = "3")Integer page,//第几页
+                              @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy)throws JsonProcessingException {
+        //构造分页构造器
+        Page pageInfo = new Page(page,pageSize);
+        //构造条件构造器
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
+
+        queryWrapper.select(Article::getArticleTitle,
+                Article::getArticleId,
+                Article::getArticleCreatedAt,
+                Article::getArticleIsFree,
+                Article::getArticlePrice,
+                Article::getArticleDetail,
+                Article::getArticleViewCount
+        );
+        switch(orderBy){
+            case 0 :
+                queryWrapper.orderByAsc(Article::getArticleId);
+                break;
+            case 1 :
+                queryWrapper.orderByDesc(Article::getArticleId);
+                break;
+            case 2:
+                queryWrapper.orderByAsc(Article::getArticleViewCount);
+                break;
+            case 3:
+                queryWrapper.orderByDesc(Article::getArticleViewCount);
+                break;
+            default :
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+        //执行查询
+        articleService.page(pageInfo,queryWrapper);
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
 
     @RequestMapping("/article/create")
     public String createArticle(@RequestParam(name = "uid", defaultValue = "")String uidStr,
