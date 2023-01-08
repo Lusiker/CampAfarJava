@@ -1,10 +1,21 @@
 <!--  -->
+<head>
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
 <template>
   <div class="container">
-    <div class="navTap">
-      <img src="@/assets/img/icon-search.png" alt="" class="search" />
-      <input type="text" placeholder="搜索关键词" class="input" />
-    </div>
+      <div class="top-box"><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        <img src="../assets/img/营地.png" alt="" class="logo">
+        <div class="title">
+
+          远行营地</div>
+        </div>
+      <div calss="greyblank"></div>
+
     <div class="banner">
       <van-swipe :autoplay="3000" indicator-color="#007aff">
         <van-swipe-item v-for="item in slides" :key="item.src">
@@ -14,38 +25,26 @@
         </van-swipe-item>
       </van-swipe>
     </div>
-    <!-- <div class="navs">
-      <div
-        :navs="navs"
-        @click.stop="goToDetail(item)"
-        v-for="item in navs.items"
-        :key="item.href"
-        class="navs-item"
-      >
-        <img :src="item.src" alt="" />
-        <span class="name">{{ item.name }}</span>
-      </div>
-    </div> -->
+<!--    <div class="navs">-->
+<!--      <div-->
+<!--        :navs="navs"-->
+<!--        @click.stop="goToDetail(item)"-->
+<!--        v-for="item in navs.items"-->
+<!--        :key="item.href"-->
+<!--        class="navs-item"-->
+<!--      >-->
+<!--        <img :src="item.src" alt="" />-->
+<!--        <span class="name">{{ item.name }}</span>-->
+<!--      </div>-->
+<!--    </div>-->
     <div class="blank">
       <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
     </div>
     <div class="gzh-box">
-      <div class="mask" v-show="showQRcode" @click="hide">
-        <div class="modal" @click.stop="show">
-          <!-- <img src="../assets/img/topright.png" alt="" class="topright" /> -->
-          <!-- <div class="title">关注公众号</div> -->
-          <!-- <div class="body">
-            <div class="code">
-              <img :src="h5GzhV1.qrcode" alt="" />
-            </div>
-          </div> -->
-          <!-- <div class="tip">长按二维码识别或截图保存</div> -->
-        </div>
-      </div>
+
       <div class="gzh-left">
         <div class="img">
-          <!-- <img :src="h5GzhV1.logo" alt="" /> -->
-          <img src="../assets/img/apple.png" alt="">
+          <img src="../assets/img/logo.png" alt="">
         </div>
         <div class="info">
           <span class="name"> 文章创作 </span>
@@ -56,17 +55,72 @@
         <div class="btn" @click="topublish">发布</div>
       </div>
     </div>
+
     <div class="section-box">
       <div class="section-box-title">
-        <div class="section-box-title-text">知识列表</div>
-        <div class="section-box-title-more" @click.stop="goToAllcourse()">
-          <span>查看全部</span>
+        <div class="section-box-title-text" v-if="change">热门文章</div>
+        <div class="section-box-title-text" v-else>最新发布</div>
+        <div class="section-box-title-more" @click.stop="tochange()">
+          <span v-if="change">查看最新发布</span>
+          <span v-else>查看热门文章</span>
         </div>
       </div>
-      <div class="section-box-body">
-        <KPCourseItem v-for="i in mains.items" :key="i.id" :item="i"></KPCourseItem>
+
+<!--      最热文章-->
+      <div class="section-box-body" v-if="change">
+        <div class="" v-for="item in mains1" :key="item.id">
+          <div class="item" @click.stop="goToDetail(item)">
+            <div class="item-comp">
+              <div class="img">
+                <img :src="item.picture" alt="" />
+              </div>
+              <div class="text">
+                <div class="text-title">{{ item.title }}</div>
+                <div class="text-info">
+                  <div class="text-info-left">{{ "作者："+item.uid}}</div>
+                  <div class="text-info-right" v-if="item.price > 0">
+                    <span class="charge"> ￥ </span>
+                    {{ item.price }}
+                  </div>
+                  <div class="free" v-else>
+                    <div style="color">免费</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!--      热门文章-->
+      <div class="section-box-body" v-else>
+        <div class="" v-for="item in mains2" :key="item.id">
+          <div class="item" @click.stop="goToDetail(item)">
+            <div class="item-comp">
+              <div class="img">
+                <img :src="item.picture" alt="" />
+              </div>
+              <div class="text">
+                <div class="text-title">{{ item.title }}</div>
+                <div class="text-info">
+                  <div class="text-info-left">{{ "作者："+item.uid}}</div>
+                  <div class="text-info-right" v-if="item.price > 0">
+                    <span class="charge"> ￥ </span>
+                    {{ item.price }}
+                  </div>
+                  <div class="free" v-else>
+                    <div style="color">免费</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+
+
     <div class="footer-box">
       <!-- <div class="inline-img">
         <img src="../assets/img/watermark@2x.png" alt="" />
@@ -82,26 +136,38 @@
 // a.1 引入vant 轮播图相关组件
 import Vue from "vue";
 import { Swipe, SwipeItem, Lazyload } from "vant";
+import axios from 'axios'
 Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Lazyload);
 import KPBlank from "@/components/KPBlank.vue";
+import KPCourseItem from "@/components/KPCourseItem.vue";
 import KPFootNav from "@/components/kp-foot-nav.vue";
 export default {
   //import引入的组件需要注入到对象中才能使用
   components: {
     KPBlank,
+    KPCourseItem,
     "kp-foot-nav": KPFootNav,
   },
   data() {
     //这里存放数据
     return {
+      change: true,
       blocks: [],
       slides: [{src:require('../assets/img/1.jpg')}, {src:require('../assets/img/2.jpg')}, {src:require('../assets/img/3.jpg')}],
       navs: [],
       blank: {},
       h5GzhV1: [],
-      mains: [],
+      mains1: [
+        {picture:require('../assets/img/1.jpg'),title:'前后端如何数据联调1',uid:'1',price:'2'},
+        {picture:require('../assets/img/2.jpg'),title:'vue生命周期的讲解1',uid:'3',price:'4'},
+
+      ],//热门
+      mains2: [
+        {picture:require('../assets/img/3.jpg'),title:'前后端如何数据联调2',uid:'1',price:'2'},
+        {picture:require('../assets/img/logo.png'),title:'vue生命周期的讲解2',uid:'3',price:'4'},
+      ],//最新
       showQRcode: false,
       tables: [
         {
@@ -128,16 +194,27 @@ export default {
   //监控data中的数据变化
   watch: {},
   //方法集合
+
+  //尝试一次接口联调
+  created(){
+    // this.$request.get('/popularArticles').then(
+    //     (res) => {
+    //       //干事情
+    //       this.mains1 = res.returnObject.records;
+    //     }
+    // )
+    //     .catch(error=>{
+    //       alert("error");
+    //     })
+  },
   methods: {
     topublish: function () {
-      if(!this.$store.getters.loginState){
-        this.$store.dispatch('intercept','publish')
-        this.$router.push('/login-password')
-      } else {
-        this.$router.push({
-          path: "/publish",
-        });
-      }
+      this.$router.push({
+        path: "/publish",
+      });
+    },
+    tochange: function () {
+      this.change=!this.change;
     },
     goToAllcourse: function () {
       this.$router.push({
@@ -145,12 +222,12 @@ export default {
       });
     },
     goToDetail: function (item) {
-      this.$router.push({
-        path: "/vod/detail",
-        query: {
-          id: item.href.split("?")[1].split("=")[1],
-        },
-      });
+      // this.$router.push({
+      //   path: "/article/:aid",
+      //   query: {
+      //     id: item.href.split("?")[1].split("=")[1],
+      //   },
+      // });
     },
 
     show: function () {
@@ -172,6 +249,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@font-face {
+    font-family: SmileySans-Oblique;
+    src: url("../assets/SmileySans-Oblique.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
 .container {
   position: absolute;
   top: 0;
@@ -182,6 +265,31 @@ export default {
   overflow-x: hidden;
   overflow-y: scroll;
   padding-top: 0px;
+
+  div.top-box {
+        width: 100%;
+        height: 1.3333rem;
+        background: #fff;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        .logo{
+          height: 30px;
+          width: 30px;
+          vertical-align: middle;
+        }
+        div.title {
+          font-family: SmileySans-Oblique;
+          width: 72%;
+          height: 0.48rem;
+          font-size: 0.62rem;
+          font-weight: 500;
+          color: #171923;
+          line-height: 0.48rem;
+          // vertical-align: middle;
+          display: inline-block;
+        }}
+  
   .navTap {
     width: 100%;
     height: 1.3333rem;
@@ -220,7 +328,6 @@ export default {
     }
     img {
       width: 100%;
-      // height: 3.0667rem;
       height: 100%;
     }
   }
@@ -424,6 +531,74 @@ export default {
 
     .section-box-body {
       width: 100%;
+      .item {
+        margin-bottom: 0.4rem;
+        .item-comp {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          .img {
+            width: 3.2rem;
+            height: 2.4rem;
+            margin-right: 0.2667rem;
+            img {
+              width: 3.2rem;
+              height: 2.4rem;
+              border-radius: 0.1067rem;
+            }
+          }
+
+          .text {
+            flex: 1;
+            padding-top: 0.1333rem;
+            .text-title {
+              width: 100%;
+              height: 1.0667rem;
+              font-size: 0.4rem;
+              font-weight: 500;
+              color: #171923;
+              line-height: 0.5333rem;
+              margin-bottom: 0.4rem;
+            }
+
+            .text-info {
+              width: 100%;
+              height: auto;
+              display: flex;
+              align-items: center;
+              .text-info-left {
+                flex: 1;
+                text-align: left;
+                font-size: 0.32rem;
+                font-weight: 400;
+                color: #999;
+                line-height: 0.32rem;
+              }
+
+              .text-info-right {
+                flex: 1;
+                text-align: right;
+                font-size: 0.48rem;
+                line-height: 0.48rem;
+                font-weight: 600;
+                color: #ff5858;
+                .charge {
+                  font-size: 0.3733rem;
+                  margin-right: -0.1333rem;
+                }
+              }
+              .free {
+                flex: 1;
+                text-align: right;
+                font-size: 0.3733rem;
+                line-height: 0.48rem;
+                font-weight: 600;
+                color: #52c41a;
+              }
+            }
+          }
+        }
+      }
     }
   }
   .footer-box {

@@ -1,19 +1,27 @@
+// es 中 import 语法，引入模块 Vue 核心库
 import Vue from 'vue';
+// vue-router 核心库
 import VueRouter from "vue-router";
+// 引入一个组件
 import HomeView from "../views/HomeView.vue";
-
+// vue 中一个插件
+// Vue.use(VueRouter)
 Vue.use(VueRouter);
 const routes = [
-  {
-    path: '/home',
-    redirect: '/'
-  },
   {
     path: "/",
     name: "home",
     component: HomeView,
     meta: {
       title: "主页",
+    },
+  },
+  {
+    path: "/vod",
+    name: "vod",
+    component: () => import("../views/VodView.vue"),
+    meta: {
+      title: "全部视频",
     },
   },
   {
@@ -25,6 +33,15 @@ const routes = [
     },
   },
   {
+    path: "/otheruserknowledge",
+    name: "otheruserknowledge",
+    component: () => import("../views/OtherUserKnowledgeView.vue"),
+    meta: {
+      title: "TA的文章",
+    },
+  },
+
+  {
     path: "/article/:aid",
     name: "articleDetail",
     component: () => import("../views/DetailView.vue"),
@@ -32,6 +49,15 @@ const routes = [
       title: "文章详情",
     },
   },
+  {
+    path: "/question",
+    name: "question",
+    component: () => import("../views/QuestionListView.vue"),
+    meta: {
+      title: "问答",
+    },
+  },
+
   {
     path: "/knowledge",
     name: "knowledge",
@@ -49,6 +75,7 @@ const routes = [
       title: "我的",
     },
   },
+
   {
     path: "/checkstand",
     name: "checkstand",
@@ -85,9 +112,20 @@ const routes = [
     },
   },
   {
-    path: "/user/:uid",
-    name: "others",
-    component: () => import("../views/OtherUserView.vue")
+    path: "/vipcenter",
+    name: "vipcenter",
+    component: () => import("../views/VipcenterView.vue"),
+    meta: {
+      title: "VIP会员",
+    },
+  },
+  {
+    path: "/trolley",
+    name: "trolley",
+    component: () => import("../views/TrolleyView.vue"),
+    meta: {
+      title: "购物车",
+    },
   },
   {
     path: "/order",
@@ -98,6 +136,22 @@ const routes = [
     },
   },
   {
+    path: "/otheruser",
+    name: "otheruser",
+    component: () => import("../views/OtherUserView.vue"),
+    meta: {
+      title: "他人用户信息",
+    },
+  },
+  {
+    path: "/purchase",
+    name: "purchase",
+    component: () => import("../views/PurchaseView.vue"),
+    meta: {
+      title: "购买",
+    },
+  },
+  {
     path: "/myarticle",
     name: "myarticle",
     component: () => import("../views/MyArticleView.vue"),
@@ -105,6 +159,18 @@ const routes = [
       title: "我的文章",
     },
   },
+
+
+  {
+    path: "/video",
+    name: "video",
+    component: () => import("../views/VideoView.vue"),
+    meta: {
+      title: "视频",
+      auth: true,
+    },
+  },
+
   {
     path: "/register",
     name: "register",
@@ -120,10 +186,6 @@ const routes = [
     meta: {
       title: "发布"
     }
-  },
-  {
-    path: '*',
-    redirect: '/'
   }
 ];
 
