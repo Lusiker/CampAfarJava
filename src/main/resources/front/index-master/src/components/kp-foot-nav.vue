@@ -12,11 +12,6 @@
       <img v-else src="@/assets/img/icon-study-n@2x.png" alt="" /><span>知识</span>
     </div>
 
-    <div class="item" @click.stop="handleClick('question')">
-      <img v-if="type === 'question'" src="@/assets/img/马上提问2.png" alt="" />
-      <img v-else src="@/assets/img/马上提问1.png" alt="" /><span>问答</span>
-    </div>
-
     <div class="item" @click.stop="handleClick('member')">
       <img v-if="type === 'member'" src="@/assets/img/icon-me-h@2x.png" alt="" />
       <img v-else src="@/assets/img/icon-me-n@2x.png" alt="" /><span>我的</span>
