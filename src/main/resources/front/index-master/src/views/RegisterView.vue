@@ -69,7 +69,7 @@
           v-if="registerForm.passwordRepeat !== registerForm.password"
         />
         <div  @click="$router.push('/login-password')">
-          <a>返回登录</a>
+          <a><span style="color:cornflowerblue;">返回登录</span></a>
         </div>
       </div>
 
