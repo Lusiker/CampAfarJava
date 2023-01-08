@@ -58,15 +58,6 @@ const routes = [
     },
   },
   {
-    path: "/member/promocode",
-    name: "promocode",
-    meta: {
-      title: "我的优惠码",
-      auth: true,
-    },
-    component: () => import("../views/PromocodeView.vue"),
-  },
-  {
     path: "/setting",
     name: "setting",
     component: () => import("../views/SettingView.vue"),
@@ -109,7 +100,11 @@ const routes = [
       title: "用户中心",
     },
   },
-
+  {
+    path: "/user/:uid",
+    name: "others",
+    component: () => import("../views/OtherUserView.vue")
+  },
   {
     path: "/order",
     name: "order",
