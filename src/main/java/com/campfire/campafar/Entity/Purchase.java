@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -18,6 +19,7 @@ public class Purchase {
     private Integer userId;
     private PurchaseTypeEnum targetType;
     private Integer targetId;
+    private BigDecimal purchaseValue;
     private Date purchaseCreatedAt;
     private PurchaseStateEnum purchaseState;
     private Date purchaseFinishedAt;
