@@ -1,13 +1,7 @@
 <!-- -->
 <template>
-  <div class="container" style="padding-top: 0px">
+  <div class="container" style="padding-top: 0">
     <div class="user-icon">
-      <div class="left-icon" @click="tomessage">
-        <img src="../assets/img/icon-message@2x.png" alt="" />
-      </div>
-      <div class="right-icon" @click="tosetting">
-        <img src="../assets/img/icon-setting@2x.png" alt="" />
-      </div>
     </div>
 
     <div class="user-info" v-if="loginState" @click="goTousers">
@@ -70,19 +64,9 @@
               <div class="text">我的文章</div>
             </div>
           </div>
-          <div class="grid-item" @click="toCode">
-            <div class="icon">
-              <div class="icon-img">
-                <img src="../assets/img/icon-money@2x.png" alt="" />
-              </div>
-              <div class="text">我的邀请</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
-
-
     <kp-foot-nav type="member"></kp-foot-nav>
   </div>
 </template>
@@ -136,17 +120,6 @@ export default {
         path: "/login-password",
       });
     },
-    toCode: function () {
-      if (this.token) {
-        this.$router.push({
-          path: "/member/promocode",
-        });
-      } else {
-        this.$router.push({
-          path: "/login-password",
-        });
-      }
-    },
     goTousers: function () {
       if (this.loginState) {
         this.$router.push({
@@ -178,17 +151,6 @@ export default {
       this.$router.push({
         path: "/setting",
       });
-    },
-    tomessage: function () {
-      if (this.token) {
-        this.$router.push({
-          path: "/message",
-        });
-      } else {
-        this.$router.push({
-          path: "/login-password",
-        });
-      }
     },
   },
   //生命周期 - 挂载完成（可以访问DOM元素）
