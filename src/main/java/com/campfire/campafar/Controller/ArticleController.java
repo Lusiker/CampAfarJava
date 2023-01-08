@@ -155,7 +155,7 @@ public class ArticleController {
         }
 
         //创建文章
-        Article article = new Article(uid, title, "", 0, true, price);
+        Article article = new Article(uid, title, "", 0, isFree, price);
         if(articleRepository.createArticle(article) != 0){
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR,1,null));
         }
@@ -175,47 +175,71 @@ public class ArticleController {
     public String getArticleInfo(@RequestParam(value = "uid", defaultValue = "")String uidStr,
                                  @RequestParam(value = "aid", defaultValue = "")String aidStr) throws JsonProcessingException {
         Integer uid = InfoParser.parseInt(uidStr);
-        if(uid == null){
+        if (uid == null) {
             //用户id无效
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
         }
 
         Integer aid = InfoParser.parseInt(aidStr);
-        if(aid == null) {
+        if (aid == null) {
             //文章id无效
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
-        }
-
-        User user = userRepository.selectUserById(uid);
-        if (user == null) {
-            //目标用户不存在
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
         }
 
         Article article = articleRepository.selectArticleById(aid);
-        if(article == null) {
+        if (article == null) {
             //文章不存在或已删除
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
         }
 
-        if(article.getUserId().equals(uid)) {
-            //阅读者与创建者相同
-
-            //在不更新阅读量的情况下返回文章
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
-        } else if(purchaseRepository.checkUserHasBoughtArticle(uid, aid)) {
-            //文章阅读时+1，返回文章
-            if(!articleRepository.updateArticleReadCount(article)) {
-                //更新阅读数失败
-                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        if (uid != 0) {
+            User user = userRepository.selectUserById(uid);
+            if (user == null) {
+                //目标用户不存在
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
             }
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+
+            if (article.getUserId().equals(uid)) {
+                //阅读者与创建者相同
+
+                //在不更新阅读量的情况下返回文章
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+            } else if (purchaseRepository.checkUserHasBoughtArticle(uid, aid)) {
+                //文章阅读时+1，返回文章
+                if (!articleRepository.updateArticleReadCount(article)) {
+                    //更新阅读数失败
+                    return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+                }
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+            } else {
+                //尚未购买
+                if (article.getArticleIsFree()) {
+                    //但是文章是免费的
+                    if (!articleRepository.updateArticleReadCount(article)) {
+                        //更新阅读数失败
+                        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+                    }
+                    return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+                }
+
+                //不展示文章详情
+                article.setArticleDetail("");
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 1, article));
+            }
         } else {
-            //尚未购买
+            //游客
+            if (article.getArticleIsFree()) {
+                //但是文章是免费的
+                if (!articleRepository.updateArticleReadCount(article)) {
+                    //更新阅读数失败
+                    return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+                }
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+            }
 
             //不展示文章详情
             article.setArticleDetail("");
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 1, article));
         }
     }
     
