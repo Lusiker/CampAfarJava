@@ -12,7 +12,7 @@ import {
   GridItem,
   Loading,
   NoticeBar, Row, Switch, Tab, Tabs,
-  Tag, Uploader, Image as VanImage, ActionSheet, Notify
+  Tag, Uploader, Image as VanImage, ActionSheet, Notify, Pagination
 } from 'vant';
 
 /* 1. 引入项目初始化样式 */
@@ -90,6 +90,7 @@ Vue.use(NoticeBar)
   .use(Tabs)
   .use(VanImage)
   .use(ActionSheet)
+  .use(Pagination)
   .use(Notify);
 
 new Vue({
