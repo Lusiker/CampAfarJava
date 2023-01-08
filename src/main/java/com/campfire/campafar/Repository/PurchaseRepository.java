@@ -1,8 +1,152 @@
 package com.campfire.campafar.Repository;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.campfire.campafar.Entity.Purchase;
+import com.campfire.campafar.Entity.User;
+import com.campfire.campafar.Enum.PurchaseStateEnum;
+import com.campfire.campafar.Enum.PurchaseTypeEnum;
+import com.campfire.campafar.Mapper.PurchaseMapper;
+import com.campfire.campafar.Mapper.UserMapper;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
+
+import javax.annotation.Resource;
+import java.util.Date;
 
 @Repository
 public class PurchaseRepository {
     //支付相关数据库操作
+    @Resource
+    PurchaseMapper purchaseMapper;
+    @Resource
+    UserMapper userMapper;
+
+    //创建新的支付订单
+    public boolean insertPurchase(Purchase purchase) {
+        return purchaseMapper.insert(purchase) == 1;
+    }
+
+    public Purchase selectPurchaseByUidAndPurchaseInfo(int uid, PurchaseTypeEnum type, int tid) {
+        QueryWrapper<Purchase> wrapper = new QueryWrapper<Purchase>()
+                .eq("user_id", uid)
+                .and(w -> w.eq("target_type", type))
+                .and(w -> w.eq("target_id", tid))
+                .orderBy(true, false, "purchase_created_at");
+
+        return purchaseMapper.selectOne(wrapper);
+    }
+
+    public int userCreatePurchase(User user, Purchase purchase) {
+        Purchase prevPurchase = selectPurchaseByUidAndPurchaseInfo(user.getUserId(), purchase.getTargetType(), purchase.getTargetId());
+        if(prevPurchase == null) {
+            //对于相同目标的订单不存在
+            if(insertPurchase(purchase)) {
+                //创建成功
+                return 0;
+            }
+
+            //服务器错误,创建失败
+            return -1;
+        }
+
+        //原先的同类订单存在
+        switch (purchase.getPurchaseState()) {
+            case FINISHED -> {
+                //已经支付过，无法再次创建
+                return -2;
+            }
+            case TIMEOUT, CANCELLED -> {
+                //上一订单已取消或超时，可以创建
+                if(insertPurchase(purchase)) {
+                    //创建成功
+                    return 0;
+                }
+
+                //服务器错误,创建失败
+                return -1;
+            }
+            case CREATED -> {
+                Date now = new Date();
+                if(now.getTime() - prevPurchase.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
+                    //先前未支付订单已超时
+                    UpdateWrapper<Purchase> wrapper1 = new UpdateWrapper<Purchase>().eq("purchase_id", prevPurchase.getPurchaseId());
+                    wrapper1.set("purchase_state", PurchaseStateEnum.TIMEOUT);
+
+                    //更新上一订单情况
+                    if(purchaseMapper.update(null, wrapper1) != 1) {
+                        //服务器错误,更新失败
+                        return -1;
+                    }
+
+                    if(insertPurchase(purchase)) {
+                        //创建成功
+                        return 0;
+                    }
+
+                    //服务器错误,创建失败
+                    return -1;
+                } else {
+                    //上一订单尚未超时，无法创建
+                    return -3;
+                }
+            }
+            default -> {
+                //unreachable
+                return -4;
+            }
+        }
+    }
+
+    public int userExecutePurchase(User user, Purchase purchase) {
+        UpdateWrapper<Purchase> wrapper1 = new UpdateWrapper<Purchase>().eq("purchase_id", purchase.getPurchaseId());
+        //当前时间
+        Date now = new Date();
+        if(now.getTime() - purchase.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
+            //订单已超时，无法支付
+            wrapper1.set("purchase_state", PurchaseStateEnum.TIMEOUT);
+
+            if(purchaseMapper.update(null, wrapper1) != 1) {
+                //服务器错误，更新失败
+                return -1;
+            }
+
+            //订单超时，无法支付
+            return -2;
+        }
+
+        //设置订单为支付完成
+        purchase.setPurchaseState(PurchaseStateEnum.FINISHED);
+        purchase.setPurchaseFinishedAt(now);
+        if(purchaseMapper.update(purchase,wrapper1) != 1){
+            //服务器错误，更新失败
+            return -1;
+        }
+
+        //扣除用户金额
+        user.setUserPoint(user.getUserPoint().subtract(purchase.getPurchaseValue()));
+
+        UpdateWrapper<User> wrapper2 = new UpdateWrapper<User>()
+                .eq("user_id",user.getUserId())
+                .set("user_point",user.getUserPoint());
+
+        if(userMapper.update(null, wrapper2) != 1) {
+            //更新用户余额失败
+            return -1;
+        }
+
+        //支付完成
+        return 0;
+    }
+
+    //检查用户是否已经购买某文章
+    public boolean checkUserHasBoughtArticle(int uid, int aid) {
+        Purchase result = selectPurchaseByUidAndPurchaseInfo(uid, PurchaseTypeEnum.ARTICLE, aid);
+
+        if(result == null) {
+            return false;
+        }
+
+        return result.getPurchaseState() == PurchaseStateEnum.FINISHED;
+    }
 }
