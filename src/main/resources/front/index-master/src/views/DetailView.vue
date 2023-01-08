@@ -19,6 +19,7 @@
       </div>
       <div  v-else>
         <van-image
+          class="banner"
           :src="bannerSrc"
           width="100%"
           height="300px"
@@ -28,7 +29,7 @@
     </div>
 
     <v-card
-        class="mt-3 author-info"
+        class="author-info"
         width="100%"
         height="auto"
         tile
@@ -36,7 +37,7 @@
         v-if="!this.articleNotExist"
     >
       <v-overlay
-          :absolute="true"
+          absolute
           :value="!userLoaded"
       >
         <van-loading/>
@@ -65,7 +66,15 @@
                   {{author.userEmail}}
                 </div>
               </van-col>
-              <v-btn class="btn"><span class="btn-info">用户资料</span></v-btn>
+              <v-btn
+                  :color="'#da5a22'"
+                  class="profile-btn"
+                  @click="toUserProfile"
+              >
+                <span class="btn-info">
+                  用户资料
+                </span>
+              </v-btn>
             </van-row>
           </div>
           <v-divider/>
@@ -98,16 +107,36 @@
           文章加载中
         </van-col>
       </div>
-      <v-sheet>
-        <h1>{{article.articleTitle}}</h1>
+      <div v-else>
+        <v-card
+            class="title-info"
+            elevation="5"
+        >
+          <h1>{{article.articleTitle}}</h1>
+          <h3>创建于:{{createdAt}}</h3>
+          <h3>浏览量:{{article.articleViewCount}}</h3>
+        </v-card>
         <v-divider/>
-        <div class="dialog-content">
+        <v-card  height="200px">
 
-          <div class="dialog" v-html="article.articleDetail"></div>
-        </div>
-      </v-sheet>
+          <div class="dialog-content">
+            <div class="dialog" v-html="article.articleDetail"></div>
+            <v-overlay
+                :absolute="true"
+                :value="notPurchased"
+            >
+              <v-btn
+                  :color="'#3aafd9'"
+              >
+                <span style="font-size: 14px">前往购买</span>
+              </v-btn>
+            </v-overlay>
+          </div>
+
+        </v-card>
+      </div>
     </div>
-    </v-container>
+  </v-container>
 </template>
 
 <script>
@@ -130,21 +159,41 @@ export default {
       author: {},
       commentText: '',
       articleNotExist: false,
+      notPurchased: false,
     };
   },
+  computed: {
+    createdAt() {
+      if(this.article === {}) {
+        return ''
+      }
+
+      let t = new Date(this.article.articleCreatedAt)
+      let result = t.getFullYear() + "年" + t.getMonth() +"月" + t.getDate() + "日  " + t.getHours() + ":"
+      if(t.getMinutes() < 10) {
+        result += "0" + t.getMinutes() + ":"
+      } else {
+        result += t.getMinutes() + ":"
+      }
+
+      if(t.getSeconds() < 10) {
+        result += "0" + t.getSeconds()
+      } else {
+        result += t.getSeconds()
+      }
+
+      return result
+    }
+  },
   methods: {
+    toUserProfile() {
+      this.$router.push('/user/' + this.article.userId)
+    },
     goToHome: function () {
       this.$router.push({
         path: "/",
       });
     },
-
-    tologin: function () {
-      this.$router.push({
-        path: "/login-password",
-      });
-    },
-
     getUserCardInfo() {
       this.$request.get("/user/cardInfo?uid=" + this.article.userId).then(
         (res) => {
@@ -162,21 +211,6 @@ export default {
           }
         }
       )
-    }
-  },
-  computed: {
-    chipInfo() {
-      if(this.userLoaded) {
-        switch (this.author.userState) {
-          case "RESTRICTED": return "受限制"
-          case "NORMAL": return "正常"
-          case "BANNED": return "被封禁"
-          case "LOGOFF": return "已注销"
-          default: return "未知状态"
-        }
-      } else {
-        return "..."
-      }
     }
   },
   mounted() {
@@ -227,6 +261,11 @@ export default {
                   case 0: {
                     this.article = res.returnObject
                     this.getUserCardInfo()
+                    if(res.specificCode === 1) {
+                      //尚未购买
+                      this.notPurchased = true
+                    }
+
                     break
                   }
                   case -1: {
@@ -251,8 +290,21 @@ export default {
 </script>
 
 <style scoped>
+  .banner {
+    border: 1px solid grey;
+  }
   .author-info {
-
+    margin-top: 10px;
+  }
+  .profile-btn {
+    position:absolute;
+    top: 10px;
+    right:10px
+  }
+  .title-info {
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
   .title {
     font-size: 220px;
@@ -281,6 +333,7 @@ export default {
   }
   .btn-info {
     font-size: 10px;
+    color: white;
   }
   .tabs {
     padding-top: 10px;
