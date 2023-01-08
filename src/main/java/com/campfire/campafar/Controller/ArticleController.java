@@ -52,7 +52,7 @@ public class ArticleController {
                 Article::getArticleCreatedAt,
                 Article::getArticleIsFree,
                 Article::getArticlePrice,
-                Article::getArticleDetail,
+                Article::getArticleTitle,
                 Article::getArticleViewCount
         );
         switch(orderBy){
