@@ -5,6 +5,7 @@ create table purchase (
     user_id int unsigned NOT NULL,
     target_type tinyint(2) NOT NULL, #支付类别，文章、提问、旁听
     target_id int unsigned NOT NULL, #对象id
+    purchase_value decimal(7, 2) NOT NULL , #本单价格
     purchase_created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, #支付创建时间
     purchase_state tinyint(2) NOT NULL DEFAULT 0, #支付状态
     purchase_finished_at timestamp default null, #支付完成于
