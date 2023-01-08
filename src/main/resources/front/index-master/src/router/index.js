@@ -77,15 +77,6 @@ const routes = [
   },
 
   {
-    path: "/checkstand",
-    name: "checkstand",
-    component: () => import("../views/CheckstandView.vue"),
-    meta: {
-      title: "收银台",
-      auth: true,
-    },
-  },
-  {
     path: "/remit",
     name: "remit",
     component: () => import("../views/RemitView.vue"),
