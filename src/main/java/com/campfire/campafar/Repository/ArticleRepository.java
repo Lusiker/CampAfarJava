@@ -25,6 +25,17 @@ public class ArticleRepository {
         return articleMapper.update(article, wrapper) == 1;
     }
 
+    public boolean updateArticleReadCount(Article article) {
+        //此操作在高并发下无法保证原子性
+        article.setArticleViewCount(article.getArticleViewCount() + 1);
+
+        UpdateWrapper<Article> wrapper = new UpdateWrapper<Article>()
+                .eq("article_id",article.getArticleId())
+                .set("article_view_count", article.getArticleViewCount());
+
+        return articleMapper.update(null, wrapper) == 1;
+    }
+
     public boolean updateArticleDetail(Article article) {
         UpdateWrapper<Article> wrapper = new UpdateWrapper<>();
         wrapper.eq("article_id", article.getUserId())
@@ -45,5 +56,11 @@ public class ArticleRepository {
         QueryWrapper<Article> wrapper = new QueryWrapper<Article>().eq("article_id", aid);
 
         return articleMapper.selectOne(wrapper);
+    }
+
+    public Long getArticleCount() {
+        QueryWrapper<Article> wrapper = new QueryWrapper<Article>();
+
+        return articleMapper.selectCount(wrapper);
     }
 }
