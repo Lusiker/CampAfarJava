@@ -215,6 +215,9 @@ const getters = {
       return state.defaultAvatar
     }
   },
+  defaultAvatar(state) {
+    return state.defaultAvatar
+  },
   bannerArticleNotExistSrc(state) {
     return state.bannerArticleNotExist
   },
