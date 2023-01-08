@@ -23,30 +23,40 @@
         </div>
 
         <div class="bottom-box">
-          <div class="left active"          @click="goTofree">全部</div>
+          <div class="left active" @click="goTofree">全部</div>
           <div class="right" @click="goTovod">免费</div>
           <!-- 12 -->
 
           <!-- 12 -->
         </div>
+
       </div>
-      <div class="grey"></div>
-      <div class="box-body" v-if="num == 0">
-        <KPCourseItem v-for="i in mains" :key="i.id" :item="i"></KPCourseItem>
+
+
+
+      <div class="box-body" v-if="num === 0">
+
+        <van-pagination
+          v-model="page"
+          :page-count="totalPage"
+          items-per-page="5"
+        />
       </div>
       <div class="box-body" v-else>
-        <KPCourseItem v-for="i in frees" :key="i.id" :item="i"></KPCourseItem>
+
       </div>
       <kp-foot-nav type="knowledge"></kp-foot-nav>
+      <div v-for="article in articles" :key="article.articleId">
+
+      </div>
     </div>
+
   </template>
 
   <script>
-  //这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-  //例如：import 《组件名称》 from '《组件路径》';
   import KPFootNav from "@/components/kp-foot-nav.vue";
   import KPCourseItem from "@/components/KPCourseItem.vue";
-  import axios from "axios";
+
   export default {
     //import引入的组件需要注入到对象中才能使用
     components: {
@@ -56,43 +66,18 @@
     data() {
       //这里存放数据
       return {
+        page: 1,
+        totalPage: 1,
         num: 0,
-        mains: {},
+        articles: [{articleId:0},{articleId:1},{articleId:2}],
         frees: {},
         isShow: false,
         choice: [],
-        // tables:[{
-        //   src: require("../assets/img/icon-home-h@2x.png"),
-        //   text: "首页",
-        // },
-        // {
-        //   src: require("../assets/img/马上提问1.png"),
-        //   text: "知识",
-        // },
-        // {
-        //   src: require("../assets/img/icon-study-n@2x.png"),
-        //   text: "问答",
-        // },
-        // {
-        //   src: require("../assets/img/icon-me-n@2x.png"),
-        //   text: "我的",
-        // },]
       };
     },
-    //监听属性 类似于data概念
     computed: {},
-    //监控data中的数据变化
     watch: {},
-    //方法集合
     methods: {
-      goToback: function () {
-        this.$router.push({
-          path: "/",
-        });
-      },
-      filtrate: function (index) {
-
-      },
       show: function () {
         this.isShow = true;
       },
@@ -113,26 +98,34 @@
         left.className = "left";
         right.className = "right active";
       },
+      loadPageCount() {
+        this.$request.get('/articles/articleCount').then(
+            (res) => {
+              let count = res.returnObject
+              this.totalPage = Math.ceil(count / 5)
+            }
+        )
+      }
     },
-    //生命周期 - 挂载完成（可以访问DOM元素）
-    mounted() {},
-    beforeCreate() {}, //生命周期 - 创建之前
-    beforeMount() {}, //生命周期 - 挂载之前
-    beforeUpdate() {}, //生命周期 - 更新之前
-    updated() {}, //生命周期 - 更新之后
-    beforeDestroy() {}, //生命周期 - 销毁之前
-    destroyed() {}, //生命周期 - 销毁完成
-    activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
+    beforeMount() {
+      this.loadPageCount()
+    }
   };
 </script>
 
 <style lang="less">
+  .article-card {
+    width: 100%;
+    height: auto;
+  }
+
   div.container {
     position: absolute;
     left: 0;
     top: 0;
     overflow-y: scroll;
     overflow-x: hidden;
+    background-color: #f3f6f9;
     width: 100%;
     height: 100%;
     div.title-box {
