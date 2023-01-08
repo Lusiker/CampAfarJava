@@ -23,14 +23,12 @@
                 placeholder="请输入用户名"
             />
           </div>
-          <div class="item" @click.stop="changeMethod">
-            <van-tag plain type="primary">
-              <img
-                  :src="loginMethod ? emailIcon : usernameIcon"
-                  style="width: 16px; height: 16px"
-              />
-            </van-tag>
-          </div>
+        </div>
+        <div class="item" @click.stop="changeMethod">
+          <img
+              :src="loginMethod ? emailIcon : usernameIcon"
+              style="width: 20px; height: 20px"
+          />
         </div>
       </div>
       <div class="item">
@@ -51,7 +49,7 @@
         </div>
       </div>
       <div id = "register" @click="toregister()">
-        <a>点击注册</a>
+        <a><span style="color:cornflowerblue;">点击注册</span></a>
       </div>
     </div>
     <div class="box border-box mt-15 pl-60 pr-60">
