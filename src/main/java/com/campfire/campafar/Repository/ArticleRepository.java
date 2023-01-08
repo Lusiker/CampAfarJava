@@ -64,6 +64,12 @@ public class ArticleRepository {
         return articleMapper.selectCount(wrapper);
     }
 
+    public Long getFreeArticleCount() {
+        QueryWrapper<Article> wrapper = new QueryWrapper<Article>().eq("article_is_free", true);
+
+        return articleMapper.selectCount(wrapper);
+    }
+
     public Long getArticleCountByUid(int uid) {
         QueryWrapper<Article> wrapper = new QueryWrapper<Article>().eq("user_id", uid);
 

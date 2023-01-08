@@ -96,8 +96,14 @@ public class ArticleController {
      * 获取文章总数方便前端分页
      */
     @RequestMapping("articles/articleCount")
-    public String getArticleTotalCount() throws JsonProcessingException {
-        long result = articleRepository.getArticleCount();
+    public String getArticleTotalCount(@RequestParam(value = "free",defaultValue = "false")String freeStr) throws JsonProcessingException {
+        Boolean free = InfoParser.parseBoolean(freeStr);
+        long result;
+        if(free){
+            result = articleRepository.getArticleCount();
+        } else {
+            result = articleRepository.getFreeArticleCount();
+        }
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, result));
     }
