@@ -15,6 +15,7 @@
         <van-col class="article-info">
           <h2>标题：{{item.articleTitle}}</h2>
           <h4>发布于：{{getDateString(item.articleCreatedAt)}}</h4>
+          <span>浏览量：{{item.articleViewCount}}</span>
           <div v-if="item.articleIsFree">
             <strong style="color: grey;"><span style="font-size: 16px">免费</span></strong>
           </div>

@@ -215,7 +215,7 @@ public class ProfileController {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
         if (!Objects.equals(userIdFrom, userIdTo)){
             queryWrapper.eq(Article::getUserId,userIdTo)
-                    .select(Article::getArticleId, Article::getArticleTitle,Article::getArticleCreatedAt,Article::getArticleTag,Article::getArticleIsFree,Article::getArticlePrice,Article::getArticleDetail);
+                    .select(Article::getArticleId, Article::getArticleTitle,Article::getArticleCreatedAt,Article::getArticleTag,Article::getArticleIsFree,Article::getArticlePrice,Article::getArticleViewCount);
         }else{
             queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(userIdTo)),Article::getUserId,userIdTo);
         }
