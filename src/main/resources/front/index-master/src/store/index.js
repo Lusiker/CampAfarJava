@@ -195,7 +195,6 @@ const state = {
     },
 
     interceptedTarget: undefined,
-
 }
 
 const getters = {

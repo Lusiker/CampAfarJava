@@ -32,15 +32,6 @@ const routes = [
     },
   },
   {
-    path: "/question",
-    name: "question",
-    component: () => import("../views/QuestionListView.vue"),
-    meta: {
-      title: "问答",
-    },
-  },
-
-  {
     path: "/knowledge",
     name: "knowledge",
     component: () => import("../views/KnowledgeView.vue"),
@@ -55,14 +46,6 @@ const routes = [
     component: () => import("../views/MemberView.vue"),
     meta: {
       title: "我的",
-    },
-  },
-  {
-    path: "/setting",
-    name: "setting",
-    component: () => import("../views/SettingView.vue"),
-    meta: {
-      title: "设置",
     },
   },
   {
@@ -120,14 +103,6 @@ const routes = [
     meta: {
       title: "我的文章",
     },
-  },
-  {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
   },
   {
     path: "/register",
