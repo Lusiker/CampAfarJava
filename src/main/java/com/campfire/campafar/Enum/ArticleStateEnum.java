@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.baomidou.mybatisplus.annotation.IEnum;
 
 public enum ArticleStateEnum implements IEnum<Byte> {
-    ReVIEWING(0),//尚未确认邮箱地址可用，受限
+    REVIEWING(0),//尚未确认邮箱地址可用，受限
     NORMAL(1),//文章状态正常
     DELETED(2);//文章已删除
 
