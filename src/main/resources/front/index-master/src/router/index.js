@@ -9,19 +9,15 @@ import HomeView from "../views/HomeView.vue";
 Vue.use(VueRouter);
 const routes = [
   {
-    path: "/",
+    path: '/',
+    redirect: '/home'
+  },
+  {
+    path: "/home",
     name: "home",
     component: HomeView,
     meta: {
       title: "主页",
-    },
-  },
-  {
-    path: "/vod",
-    name: "vod",
-    component: () => import("../views/VodView.vue"),
-    meta: {
-      title: "全部视频",
     },
   },
   {
@@ -33,15 +29,6 @@ const routes = [
     },
   },
   {
-    path: "/otheruserknowledge",
-    name: "otheruserknowledge",
-    component: () => import("../views/OtherUserKnowledgeView.vue"),
-    meta: {
-      title: "TA的文章",
-    },
-  },
-
-  {
     path: "/article/:aid",
     name: "articleDetail",
     component: () => import("../views/DetailView.vue"),
@@ -50,15 +37,6 @@ const routes = [
     },
   },
   {
-    path: "/question",
-    name: "question",
-    component: () => import("../views/QuestionListView.vue"),
-    meta: {
-      title: "问答",
-    },
-  },
-
-  {
     path: "/knowledge",
     name: "knowledge",
     component: () => import("../views/KnowledgeView.vue"),
@@ -66,7 +44,6 @@ const routes = [
       title: "知识",
     },
   },
-
   {
     path: "/member",
     name: "member",
@@ -75,7 +52,6 @@ const routes = [
       title: "我的",
     },
   },
-
   {
     path: "/remit",
     name: "remit",
@@ -86,28 +62,11 @@ const routes = [
     },
   },
   {
-    path: "/message",
-    name: "message",
-    component: () => import("../views/MessageView.vue"),
-    meta: {
-      title: "我的消息",
-      auth: true,
-    },
-  },
-  {
     path: "/users",
     name: "users",
     component: () => import("../views/UsersView.vue"),
     meta: {
       title: "用户中心",
-    },
-  },
-  {
-    path: "/vipcenter",
-    name: "vipcenter",
-    component: () => import("../views/VipcenterView.vue"),
-    meta: {
-      title: "VIP会员",
     },
   },
   {
@@ -127,14 +86,6 @@ const routes = [
     },
   },
   {
-    path: "/otheruser",
-    name: "otheruser",
-    component: () => import("../views/OtherUserView.vue"),
-    meta: {
-      title: "他人用户信息",
-    },
-  },
-  {
     path: "/purchase",
     name: "purchase",
     component: () => import("../views/PurchaseView.vue"),
@@ -150,18 +101,6 @@ const routes = [
       title: "我的文章",
     },
   },
-
-
-  {
-    path: "/video",
-    name: "video",
-    component: () => import("../views/VideoView.vue"),
-    meta: {
-      title: "视频",
-      auth: true,
-    },
-  },
-
   {
     path: "/register",
     name: "register",
@@ -177,6 +116,10 @@ const routes = [
     meta: {
       title: "发布"
     }
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ];
 
