@@ -188,7 +188,7 @@ public class ProfileController {
     /******************
      获取用户分页的数据列表
      *****************/
-    int pageSize = 10;           //每页放10条数据
+    int pageSize = 3;           //每页放10条数据
     /**
      分页的文章列表
      **/
@@ -199,7 +199,14 @@ public class ProfileController {
                               @RequestParam(value = "uidTo",defaultValue = "-1")Integer userIdTo,
                               @RequestParam(value = "page",defaultValue = "3")Integer page,//第几页
                               @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy)throws JsonProcessingException{
-
+        if(userIdFrom==-1||userIdTo==-1) {
+            //userId为空
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+        User user = userRepository.selectUserById(userIdTo);
+        if(user == null) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,2,null));
+        }
 
         //构造分页构造器
         Page pageInfo = new Page(page,pageSize);
@@ -208,7 +215,7 @@ public class ProfileController {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
         if (!Objects.equals(userIdFrom, userIdTo)){
             queryWrapper.eq(Article::getUserId,userIdTo)
-                    .select(Article::getArticleTitle,Article::getArticleCreatedAt,Article::getArticleTag,Article::getArticleIsFree,Article::getArticlePrice,Article::getArticleDetail);
+                    .select(Article::getArticleId, Article::getArticleTitle,Article::getArticleCreatedAt,Article::getArticleTag,Article::getArticleIsFree,Article::getArticlePrice,Article::getArticleDetail);
         }else{
             queryWrapper.like(StringUtils.isNotEmpty(String.valueOf(userIdTo)),Article::getUserId,userIdTo);
         }
