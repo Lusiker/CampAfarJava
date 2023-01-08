@@ -156,7 +156,7 @@ export default {
               break
             }
             default: {
-              Toast.fail("读取文章信息失败")
+              Toast.fail("读取信息失败")
               this.loadUserFailed = true
             }
           }
@@ -201,6 +201,15 @@ export default {
 
                     break
                   }
+                  case -1: {
+                    if(res.specificCode === 2) {
+                      this.bannerLoading = false
+                      this.articleNotExist = true
+                      this.bannerSrc = this.$store.getters.bannerArticleNotExistSrc
+                    }
+
+                    break
+                  }
                   default: {
                     this.bannerLoading = false
                     this.bannerSrc = this.$store.getters.defaultBannerSrc
@@ -218,6 +227,14 @@ export default {
                   case 0: {
                     this.article = res.returnObject
                     this.getUserCardInfo()
+                    break
+                  }
+                  case -1: {
+                    if(res.specificCode === 3) {
+                      this.bannerLoading = false
+                      this.articleNotExist = true
+                    }
+
                     break
                   }
                   default: {
