@@ -275,4 +275,55 @@ public class ArticleController {
         }
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
     }
+    
+    /**
+     * 首页文章展示
+     **/
+    @RequestMapping("/popularArticles")//最高浏览量三篇文章，降序
+    public String PopularArticles()throws JsonProcessingException{
+        //构造分页构造器
+        int size = 3;
+        int page = 1;
+        Page pageInfo = new Page(page,size);
+        //构造条件构造器
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
+
+        queryWrapper.select(Article::getArticleTitle,
+                Article::getArticleId,
+                Article::getArticleCreatedAt,
+                Article::getArticleIsFree,
+                Article::getArticlePrice,
+                Article::getArticleTitle,
+                Article::getArticleViewCount
+        );
+        queryWrapper.orderByDesc(Article::getArticleViewCount);
+        //执行查询
+        articleService.page(pageInfo,queryWrapper);
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
+
+    @RequestMapping("/latestArticles")//最新发布三篇文章，降序
+    public String LatestArticles()throws JsonProcessingException{
+        //构造分页构造器
+        int size = 3;
+        int page = 1;
+        Page pageInfo = new Page(page,size);
+        //构造条件构造器
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
+
+        queryWrapper.select(Article::getArticleTitle,
+                Article::getArticleId,
+                Article::getArticleCreatedAt,
+                Article::getArticleIsFree,
+                Article::getArticlePrice,
+                Article::getArticleTitle,
+                Article::getArticleViewCount
+        );
+        queryWrapper.orderByDesc(Article::getArticleCreatedAt);
+        //执行查询
+        articleService.page(pageInfo,queryWrapper);
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
 }
