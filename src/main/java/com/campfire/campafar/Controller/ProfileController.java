@@ -154,6 +154,9 @@ public class ProfileController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
         User user = userRepository.selectUserById(userIdTo);
+        if(user == null) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,2,null));
+        }
 
         if (!userIdFrom.equals(userIdTo)) {
             VisitorInfoWrapper wrapper;
