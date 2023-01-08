@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.campfire.campafar.Entity.Article;
 import com.campfire.campafar.Entity.User;
 import com.campfire.campafar.Enum.CommonPageState;
+import com.campfire.campafar.Enum.ArticleStateEnum;
 import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Repository.ArticleRepository;
 import com.campfire.campafar.Repository.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -189,5 +191,25 @@ public class ArticleController {
         }
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+    }
+    
+    /**
+     * 用户删除文章
+     **/
+    @RequestMapping("/article/delete")
+    public String UerDeleteArticle(@RequestParam(value = "uid",defaultValue = "-1")Integer uid,
+                                   @RequestParam(value = "aid",defaultValue = "-1")Integer aid) throws JsonProcessingException {
+        if (uid == -1 || aid == -1){
+            //参数错误
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+        Article article = articleRepository.selectArticleById(aid);
+        if (!uid.equals(article.getUserId())){
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }else{
+            article.setArticleState(ArticleStateEnum.DELETED);
+            articleRepository.updateArticle(article);
+        }
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
     }
 }
