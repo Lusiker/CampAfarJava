@@ -199,14 +199,27 @@ public class ArticleController {
     @RequestMapping("/article/delete")
     public String UerDeleteArticle(@RequestParam(value = "uid",defaultValue = "-1")Integer uid,
                                    @RequestParam(value = "aid",defaultValue = "-1")Integer aid) throws JsonProcessingException {
-        if (uid == -1 || aid == -1){
+        if (uid == -1 || aid == -1) {
             //参数错误
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
         }
-        Article article = articleRepository.selectArticleById(aid);
-        if (!uid.equals(article.getUserId())){
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
-        }else{
+
+        User user = userRepository.selectUserById(uid);
+        Article article;
+        if (articleRepository.selectArticleById(aid) == null) {
+            //文章不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        } else {
+            article = articleRepository.selectArticleById(aid);
+        }
+        if (!uid.equals(article.getUserId())) {
+            //执行操作用户不是文章作者
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.ACCESS_DENIED, 1, null));
+        } else {
+            if (user == null || user.getUserState() == UserStateEnum.LOGOFF) {
+                //用户不存在或已注销
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+            }
             article.setArticleState(ArticleStateEnum.DELETED);
             articleRepository.updateArticle(article);
         }
