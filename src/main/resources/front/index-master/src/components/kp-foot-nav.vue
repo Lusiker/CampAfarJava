@@ -82,7 +82,8 @@ export default {
     img {
       width: 28px;
       height: 28px;
-      margin-bottom: 3px;
+      margin-top: 3px;
+      margin-bottom: 7px;
     }
     span {
       height: 11px;
