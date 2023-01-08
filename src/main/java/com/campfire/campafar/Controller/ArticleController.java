@@ -44,14 +44,25 @@ public class ArticleController {
      * **/
     @RequestMapping("/articles")
     public String ArticleList(@RequestParam(value = "page",defaultValue = "3")Integer page,//第几页
-                              @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy)throws JsonProcessingException {
+                              @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy,
+                              @RequestParam(value = "free", defaultValue = "false")String freeStr) throws JsonProcessingException {
         //构造分页构造器
-        int pageSize = 5;
+        int pageSize = 6;
         Page pageInfo = new Page(page, pageSize);
         //构造条件构造器
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.select(Article::getArticleTitle,
+        Boolean free = InfoParser.parseBoolean(freeStr);
+        if(free == null) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        if(free) {
+            queryWrapper.eq(Article::getArticleIsFree, true);
+        }
+
+        queryWrapper.select(
+                Article::getArticleTitle,
                 Article::getArticleId,
                 Article::getArticleCreatedAt,
                 Article::getArticleIsFree,
