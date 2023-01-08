@@ -12,6 +12,7 @@ import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Enum.RecordTypeEnum;
 import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Mapper.UserMapper;
+import com.campfire.campafar.Repository.ArticleRepository;
 import com.campfire.campafar.Repository.RecordRepository;
 import com.campfire.campafar.Repository.UserRepository;
 import com.campfire.campafar.Service.ArticleService;
@@ -40,6 +41,8 @@ public class ProfileController {
     private UserMapper userMapper;
     @Resource
     UserRepository userRepository;
+    @Resource
+    ArticleRepository articleRepository;
     @Resource
     RecordRepository recordRepository;
     @Resource
@@ -226,6 +229,24 @@ public class ProfileController {
         articleService.page(pageInfo,queryWrapper);
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
+
+    @RequestMapping("/userArticleCount")
+    public String getUserArticleCount(@RequestParam(value = "uid")String uidStr) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if(uid == null){
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if(user == null || user.getUserState() == UserStateEnum.LOGOFF){
+            //目标用户不存在或已注销
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        long result = articleRepository.getArticleCountByUid(uid);
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, result));
     }
 
     @RequestMapping("/cardInfo")
