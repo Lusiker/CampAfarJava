@@ -63,4 +63,10 @@ public class ArticleRepository {
 
         return articleMapper.selectCount(wrapper);
     }
+
+    public Long getArticleCountByUid(int uid) {
+        QueryWrapper<Article> wrapper = new QueryWrapper<Article>().eq("user_id", uid);
+
+        return articleMapper.selectCount(wrapper);
+    }
 }
