@@ -47,7 +47,7 @@ public class ArticleController {
         //构造分页构造器
         Page pageInfo = new Page(page,pageSize);
         //构造条件构造器
-        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
 
         queryWrapper.select(Article::getArticleTitle,
                 Article::getArticleId,
