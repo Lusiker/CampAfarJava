@@ -8,6 +8,7 @@ import com.campfire.campafar.Enum.CommonPageState;
 import com.campfire.campafar.Enum.ArticleStateEnum;
 import com.campfire.campafar.Enum.UserStateEnum;
 import com.campfire.campafar.Repository.ArticleRepository;
+import com.campfire.campafar.Repository.PurchaseRepository;
 import com.campfire.campafar.Repository.UserRepository;
 import com.campfire.campafar.Service.ArticleService;
 import com.campfire.campafar.Utils.FileProcessor;
@@ -32,12 +33,12 @@ public class ArticleController {
     @Resource
     UserRepository userRepository;
     @Resource
+    PurchaseRepository purchaseRepository;
+    @Resource
     ObjectMapper objectMapper;
     @Autowired
     private ArticleService articleService;
 
-
-    int pageSize = 10;
     /**
      * 文章分页列表
      * **/
@@ -45,7 +46,8 @@ public class ArticleController {
     public String ArticleList(@RequestParam(value = "page",defaultValue = "3")Integer page,//第几页
                               @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy)throws JsonProcessingException {
         //构造分页构造器
-        Page pageInfo = new Page(page,pageSize);
+        int pageSize = 5;
+        Page pageInfo = new Page(page, pageSize);
         //构造条件构造器
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
 
@@ -77,6 +79,16 @@ public class ArticleController {
         articleService.page(pageInfo,queryWrapper);
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0,pageInfo));
+    }
+
+    /**
+     * 获取文章总数方便前端分页
+     */
+    @RequestMapping("articles/articleCount")
+    public String getArticleTotalCount() throws JsonProcessingException {
+        long result = articleRepository.getArticleCount();
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, result));
     }
 
     @RequestMapping("/article/create")
@@ -162,8 +174,6 @@ public class ArticleController {
     @RequestMapping("/article")
     public String getArticleInfo(@RequestParam(value = "uid", defaultValue = "")String uidStr,
                                  @RequestParam(value = "aid", defaultValue = "")String aidStr) throws JsonProcessingException {
-        //目前无法检测购买
-
         Integer uid = InfoParser.parseInt(uidStr);
         if(uid == null){
             //用户id无效
@@ -176,12 +186,10 @@ public class ArticleController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
 
-        if(!uid.equals(0)) {
-            User user = userRepository.selectUserById(uid);
-            if (user == null) {
-                //目标用户不存在
-                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
-            }
+        User user = userRepository.selectUserById(uid);
+        if (user == null) {
+            //目标用户不存在
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
         }
 
         Article article = articleRepository.selectArticleById(aid);
@@ -190,7 +198,25 @@ public class ArticleController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
         }
 
-        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+        if(article.getUserId().equals(uid)) {
+            //阅读者与创建者相同
+
+            //在不更新阅读量的情况下返回文章
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+        } else if(purchaseRepository.checkUserHasBoughtArticle(uid, aid)) {
+            //文章阅读时+1，返回文章
+            if(!articleRepository.updateArticleReadCount(article)) {
+                //更新阅读数失败
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+            }
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+        } else {
+            //尚未购买
+
+            //不展示文章详情
+            article.setArticleDetail("");
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, article));
+        }
     }
     
     /**
