@@ -216,6 +216,14 @@ export default {
                     this.$store.dispatch('resetIntercept')
                     break
                   }
+                  case 'order': {
+                      this.$router.push({
+                        path: "/order",
+                        replace: true
+                      });
+                    this.$store.dispatch('resetIntercept')
+                    break
+                  }
                   default: {
                     this.$router.push({
                       path: '/member',
