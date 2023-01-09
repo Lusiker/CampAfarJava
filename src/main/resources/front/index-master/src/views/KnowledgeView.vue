@@ -86,30 +86,48 @@
       },
       getArticles(free) {
         this.loading = true
-        let url = '/articles?page=' + this.page + "&orderBy=0"
-        if(free){
-          url = url + "&free=true"
-        }
-        this.$request(url).then(
-            (res) =>{
-              switch (res.stateEnum.state) {
-                case 0: {
-                  this.articles[this.page] = res.returnObject.records
-                  this.loading = false
 
-                  break
-                }
-                default: {
-                  Toast.fail("获取文章信息失败")
-                }
+        let url1 = '/articles/articleCount'
+        if(free) {
+          url1 = url1 + '?free=true'
+        }
+
+        this.$request.get(url1).then(
+            (res) => {
+              let count = res.returnObject
+              this.totalPage = count / 5 + (count % 5 === 0 ? 0 : 1)
+
+              let url2 = '/articles?page=' + this.page + "&orderBy=0"
+              if (free) {
+                url2 = url2 + "&free=true"
               }
+              this.$request(url2)
+                  .then(
+                      (res) => {
+                        switch (res.stateEnum.state) {
+                          case 0: {
+                            this.articles[this.page] = res.returnObject.records
+                            this.loading = false
+
+                            break
+                          }
+                          default: {
+                            Toast.fail("获取文章信息失败")
+                          }
+                        }
+                      }
+                  )
             }
-        )
+          )
       },
       getPage() {
         this.loading = true
 
-        this.$request.get('/articles/articleCount').then(
+        let url1 = '/articles/articleCount'
+        if(this.num === 1) {
+          url1 = url1 + '?free=true'
+        }
+        this.$request.get(url1).then(
             (res) => {
               let count = res.returnObject
               this.totalPage = count / 5 + (count % 5 === 0 ? 0 : 1)
