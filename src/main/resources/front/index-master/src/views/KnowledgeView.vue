@@ -47,8 +47,6 @@
         loading: true,
       };
     },
-    computed: {},
-    watch: {},
     methods: {
       setAll: function () {
         this.num = 0;
