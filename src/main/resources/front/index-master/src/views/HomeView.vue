@@ -43,15 +43,19 @@
 
 
       <div class="section-box-body" v-if="change">
-        <v-list style="width: 100%;background-color: #f3f6f9">
-          <Article v-for="item in mains1" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
-        </v-list>
+        <div v-if="loaded1">
+          <v-list style="width: 100%;background-color: #f3f6f9">
+            <Article v-for="item in mains1" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
+          </v-list>
+        </div>
       </div>
 
       <div class="section-box-body" v-else>
+        <div v-if="loaded2">
         <v-list style="width: 100%;background-color: #f3f6f9">
           <Article v-for="item in mains2" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
         </v-list>
+        </div>
       </div>
     </div>
     <kp-foot-nav type="home"></kp-foot-nav>
@@ -78,6 +82,8 @@ export default {
   },
   data() {
     return {
+      loaded1: false,
+      loaded2: false,
       change: true,
       blocks: [],
       slides: [{src:require('../assets/img/1.jpg')}, {src:require('../assets/img/2.jpg')}, {src:require('../assets/img/3.jpg')}],
@@ -92,6 +98,7 @@ export default {
             (res) => {
               //干事情
               this.mains1 = res.returnObject.records;
+              this.loaded1 = true
             }
         )
 
@@ -100,6 +107,7 @@ export default {
             (res) => {
               //干事情
               this.mains2 = res.returnObject.records;
+              this.loaded2 = true
             }
         )
   },
