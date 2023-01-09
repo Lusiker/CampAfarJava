@@ -105,9 +105,9 @@ public class ArticleController {
 
         long result;
         if(free){
-            result = articleRepository.getArticleCount();
-        } else {
             result = articleRepository.getFreeArticleCount();
+        } else {
+            result = articleRepository.getArticleCount();
         }
 
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL,0, result));
