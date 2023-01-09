@@ -138,7 +138,7 @@ export default {
   methods: {
     createPurchase() {
       if(this.$store.getters.loginState) {
-        this.$request.post('/purchase/create?uid=' + this.$store.getters.user.userId + "&type=article&tid=" + this.articleId)
+        this.$request.post('/purchase/create?uid=' + this.$store.getters.user.userId + "&type=article&tid=" + this.articleId + "&value=" + this.article.articlePrice)
             .then(
                 (res) => {
                   switch (res.stateEnum.state) {
