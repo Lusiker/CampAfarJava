@@ -90,6 +90,13 @@ export default {
                   this.item.purchaseState = "FINISHED"
                   this.item.purchaseFinishedAt = new Date()
                   this.$store.dispatch('setNewPoint', res.returnObject)
+
+                  switch (this.item.targetType) {
+                    case "ARTICLE": {
+                      this.$router.push('/article/' + this.item.targetId)
+                    }
+                  }
+
                   return
                 }
                 case -1: {
