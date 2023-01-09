@@ -2,11 +2,9 @@
 <template>
   <v-container class="article-global">
     <div class="nav-box">
-      <img class="title-img" src="../assets/img/icon-back.png" alt="" @click="goToHome()" />
+      <img class="title-img" src="../assets/img/icon-back.png" alt="" @click="$router.go(-1)" />
       <div class="title">知识详情</div>
     </div>
-
-
     <div class="main-img">
       <div class="loading" v-if="bannerLoading">
         <van-row>
@@ -189,11 +187,6 @@ export default {
   methods: {
     toUserProfile() {
       this.$router.push('/user/' + this.article.userId)
-    },
-    goToHome: function () {
-      this.$router.push({
-        path: "/",
-      });
     },
     getUserCardInfo() {
       this.$request.get("/user/cardInfo?uid=" + this.article.userId).then(
