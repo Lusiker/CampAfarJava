@@ -53,21 +53,17 @@ const routes = [
     },
   },
   {
-    path: "/remit",
-    name: "remit",
-    component: () => import("../views/RemitView.vue"),
-    meta: {
-      title: "打款",
-      auth: true,
-    },
-  },
-  {
     path: "/users",
     name: "users",
     component: () => import("../views/UsersView.vue"),
     meta: {
       title: "用户中心",
     },
+  },
+  {
+    path: '/user/:uid',
+    name: '用户资料',
+    component: () => import("../views/OtherUserView.vue")
   },
   {
     path: "/trolley",
