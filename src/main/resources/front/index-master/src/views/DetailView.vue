@@ -33,57 +33,48 @@
       />
     </div>
 
-    <v-tabs v-model="active" :color="'#be2929'" class="tabs">
-      <v-tab><span class="tab-text">文章</span></v-tab>
-      <v-tab><span class="tab-text">评论</span></v-tab>
-    </v-tabs>
-    <v-divider/>
-    <div v-if="active === 1">
-
+    <div v-if="!articleLoaded && !articleNotExist">
+      <van-col>
+        <v-progress-circular
+            :size="70"
+            :width="7"
+            :color="'#be2929'"
+            indeterminate
+        ></v-progress-circular>
+        文章加载中
+      </van-col>
     </div>
     <div v-else>
-      <div v-if="!articleLoaded && !articleNotExist">
-        <van-col>
-          <v-progress-circular
-              :size="70"
-              :width="7"
-              :color="'#be2929'"
-              indeterminate
-          ></v-progress-circular>
-          文章加载中
-        </van-col>
-      </div>
-      <div v-else>
-        <v-card
-            class="title-info"
-            elevation="5"
-        >
-          <h1>{{article.articleTitle}}</h1>
-          <v-divider/>
-          <h3>创建于:{{createdAt}}</h3>
-          <h3>浏览量:{{article.articleViewCount}}</h3>
-        </v-card>
+      <v-card
+          class="title-info"
+          elevation="5"
+      >
+        <h1>{{article.articleTitle}}</h1>
         <v-divider/>
-        <v-card  height="200px">
+        <h3>创建于:{{createdAt}}</h3>
+        <h3>浏览量:{{article.articleViewCount}}</h3>
+      </v-card>
+      <v-divider/>
+      <v-card  height="200px">
 
-          <div class="dialog-content">
-            <div class="dialog" v-html="article.articleDetail"></div>
-            <v-overlay
-                :absolute="true"
-                :value="notPurchased"
+        <div class="dialog-content">
+          <div class="dialog" v-html="article.articleDetail"></div>
+          <v-overlay
+              :absolute="true"
+              :value="notPurchased"
+          >
+            <v-btn
+                :color="'#3aafd9'"
+                @click="createPurchase"
             >
-              <v-btn
-                  :color="'#3aafd9'"
-                  @click="createPurchase"
-              >
-                <span style="font-size: 14px">前往购买</span>
-              </v-btn>
-            </v-overlay>
-          </div>
+              <span style="font-size: 14px">前往购买</span>
+            </v-btn>
+          </v-overlay>
+        </div>
 
-        </v-card>
-      </div>
+      </v-card>
     </div>
+
   </v-container>
 </template>
 
@@ -100,8 +91,6 @@ export default {
       bannerSrc: '',
       contentLoading: true,
       content: '',
-      active: 0,
-      comments: [],
       userLoaded: false,
       loadUserFailed: false,
       articleLoaded: false,
@@ -267,10 +256,14 @@ export default {
 </script>
 
 <style scoped>
+  .article-global {
+    height: 100%;
+    overflow: scroll;
+  }
+
   .banner {
     border: 1px solid grey;
   }
-
   .title-info {
     padding: 10px;
     margin-top: 10px;
@@ -285,14 +278,6 @@ export default {
   }
   .dialog >>> img,p,span {
     width: 100%;
-  }
-
-  .tabs {
-    padding-top: 10px;
-    width: 100%;
-  }
-  .tab-text {
-    font-size: 0.33rem;
   }
   .loading {
     padding-top: 80px;
