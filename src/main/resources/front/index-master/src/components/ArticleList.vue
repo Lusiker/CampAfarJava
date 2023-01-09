@@ -60,7 +60,7 @@ export default {
     },
     getDateString(rawDate) {
       let t = new Date(rawDate)
-      let result = t.getFullYear() + "年" + t.getMonth() +"月" + t.getDate() + "日  " + t.getHours() + ":"
+      let result = t.getFullYear() + "年" + (t.getMonth() + 1) +"月" + t.getDate() + "日  " + t.getHours() + ":"
       if(t.getMinutes() < 10) {
         result += "0" + t.getMinutes() + ":"
       } else {
