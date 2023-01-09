@@ -26,64 +26,12 @@
       </div>
     </div>
 
-    <v-card
-        class="author-info"
-        width="100%"
-        height="auto"
-        tile
-        border-radius="0px"
-        v-if="!this.articleNotExist"
-    >
-      <v-overlay
-          absolute
-          :value="!userLoaded"
-      >
-        <van-loading/>
-        用户信息读取中
-      </v-overlay>
-      <div v-show="userLoaded">
-        <div v-if="loadUserFailed">
-          <v-btn @click="getUserCardInfo">重新加载</v-btn>
-        </div>
-        <div v-else>
-          <div class="card-title">
-            <van-row clas="info-row">
-              <van-col span="4">
-                <v-avatar size="50">
-                  <img
-                      alt="user"
-                      :src="author.userAvatar"
-                  >
-                </v-avatar>
-              </van-col>
-              <van-col>
-                <span class="user-name">
-                  {{author.userName}}
-                </span>
-                <div class="user-email">
-                  {{author.userEmail}}
-                </div>
-              </van-col>
-              <v-btn
-                  :color="'#da5a22'"
-                  class="profile-btn"
-                  @click="toUserProfile"
-              >
-                <span class="btn-info">
-                  用户资料
-                </span>
-              </v-btn>
-            </van-row>
-          </div>
-          <v-divider/>
-          <v-card-text>
-            <div class="user-name">
-              {{author.userIntroduction}}
-            </div>
-          </v-card-text>
-        </div>
-      </div>
-    </v-card>
+    <div v-if="articleLoaded">
+      <UserInfoCard
+        :uid="article.userId"
+        :article-not-exist="articleNotExist"
+      />
+    </div>
 
     <v-tabs v-model="active" :color="'#be2929'" class="tabs">
       <v-tab><span class="tab-text">文章</span></v-tab>
@@ -140,8 +88,10 @@
 
 <script>
 import { Toast } from 'vant';
+import UserInfoCard from '@/components/UserInfoCard.vue';
 
 export default {
+  components: { UserInfoCard },
   data() {
     return {
       articleId: -1,
@@ -185,27 +135,7 @@ export default {
     }
   },
   methods: {
-    toUserProfile() {
-      this.$router.push('/user/' + this.article.userId)
-    },
-    getUserCardInfo() {
-      this.$request.get("/user/cardInfo?uid=" + this.article.userId).then(
-        (res) => {
-          this.userLoaded = true
-          switch (res.stateEnum.state) {
-            case 0: {
-              this.author = res.returnObject
 
-              break
-            }
-            default: {
-              Toast.fail("读取信息失败")
-              this.loadUserFailed = true
-            }
-          }
-        }
-      )
-    }
   },
   mounted() {
     this.articleId = this.$route.params.aid;
@@ -254,7 +184,6 @@ export default {
                 switch (res.stateEnum.state) {
                   case 0: {
                     this.article = res.returnObject
-                    this.getUserCardInfo()
                     if(res.specificCode === 1) {
                       //尚未购买
                       this.notPurchased = true
@@ -287,14 +216,7 @@ export default {
   .banner {
     border: 1px solid grey;
   }
-  .author-info {
-    margin-top: 10px;
-  }
-  .profile-btn {
-    position:absolute;
-    top: 10px;
-    right:10px
-  }
+
   .title-info {
     padding: 10px;
     margin-top: 10px;
@@ -310,25 +232,7 @@ export default {
   .dialog >>> img,p,span {
     width: 100%;
   }
-  .card-title {
-    height: 60px;
-    width: 100%;
-    padding-left: 10px;
-    padding-top: 5px;
-  }
-  .user-name {
-    font-size: 15px;
-    padding-left: 10px;
-  }
-  .user-email {
-    font-size: 12px;
-    padding-left: 10px;
-    font-weight: lighter;
-  }
-  .btn-info {
-    font-size: 10px;
-    color: white;
-  }
+
   .tabs {
     padding-top: 10px;
     width: 100%;
