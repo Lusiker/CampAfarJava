@@ -427,7 +427,7 @@ public class ProfileController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR, 1, null));
         }
 
-        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, user.getUserPoint()));
     }
 }
 
