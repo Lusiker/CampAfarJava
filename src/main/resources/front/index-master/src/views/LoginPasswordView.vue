@@ -136,7 +136,6 @@ export default {
                   Toast.fail("登录成功！")
                   this.$store.dispatch('login', res.returnObject)
 
-                  // 强制跳转用户界面
                   switch (this.$store.getters.intercepted){
                     case 'publish': {
                       this.$router.push({
@@ -197,14 +196,34 @@ export default {
               this.loading = false
               if(res.code === 1) {
                 Toast.fail("登录成功！")
-                console.log(res, res.returnObject);
-                this.$store.dispatch('login', res.returnObject)
 
-                // 强制跳转用户界面
-                this.$router.push({
-                  path: '/member',
-                  replace: true
-                })
+                this.$store.dispatch('login', res.data)
+
+                switch (this.$store.getters.intercepted){
+                  case 'publish': {
+                    this.$router.push({
+                      path: '/publish',
+                      replace: true
+                    })
+                    this.$store.dispatch('resetIntercept')
+                    break
+                  }
+                  case 'users': {
+                    this.$router.push({
+                      path: '/users',
+                      replace: true
+                    })
+                    this.$store.dispatch('resetIntercept')
+                    break
+                  }
+                  default: {
+                    this.$router.push({
+                      path: '/member',
+                      replace: true
+                    })
+                    this.$store.dispatch('resetIntercept')
+                  }
+                }
               } else if(res.code === 0) {
                 if(res.msg === "登录失败") {
                   Toast.fail("登录失败！")
