@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-      <div class="top-box"><div>
-        <img src="../assets/img/营地.png" alt="" class="logo">
-        <div class="title">远行营地</div>
-        </div>
-      <div calss="greyblank"></div>
+    <div class="top-box">
+      <img src="../assets/img/营地.png" alt="" class="logo">
+      <div class="title">远行营地</div>
+    </div>
+    <div class="greyblank"></div>
 
     <div class="banner">
       <van-swipe :autoplay="3000" indicator-color="#007aff">
@@ -15,23 +15,12 @@
         </van-swipe-item>
       </van-swipe>
     </div>
-<!--    <div class="navs">-->
-<!--      <div-->
-<!--        :navs="navs"-->
-<!--        @click.stop="goToDetail(item)"-->
-<!--        v-for="item in navs.items"-->
-<!--        :key="item.href"-->
-<!--        class="navs-item"-->
-<!--      >-->
-<!--        <img :src="item.src" alt="" />-->
-<!--        <span class="name">{{ item.name }}</span>-->
-<!--      </div>-->
-<!--    </div>-->
+
     <div class="blank">
       <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
     </div>
-    <div class="gzh-box">
 
+    <div class="gzh-box">
       <div class="gzh-left">
         <div class="img">
           <img src="../assets/img/logo.png" alt="">
@@ -73,7 +62,7 @@
                     {{ item.price }}
                   </div>
                   <div class="free" v-else>
-                    <div style="color">免费</div>
+                    <div style="color: grey">免费</div>
                   </div>
                 </div>
               </div>
@@ -99,7 +88,7 @@
                     {{ item.price }}
                   </div>
                   <div class="free" v-else>
-                    <div style="color">免费</div>
+                    <div style="color: grey">免费</div>
                   </div>
                 </div>
               </div>
@@ -108,8 +97,6 @@
         </div>
       </div>
     </div>
-
-
 
     <div class="footer-box">
       <!-- <div class="inline-img">
@@ -121,9 +108,6 @@
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import 《组件名称》 from '《组件路径》';
-// a.1 引入vant 轮播图相关组件
 import Vue from "vue";
 import { Swipe, SwipeItem, Lazyload } from "vant";
 import axios from 'axios'
@@ -134,7 +118,6 @@ import KPBlank from "@/components/KPBlank.vue";
 import KPCourseItem from "@/components/KPCourseItem.vue";
 import KPFootNav from "@/components/kp-foot-nav.vue";
 export default {
-  //import引入的组件需要注入到对象中才能使用
   components: {
     KPBlank,
     KPCourseItem,
@@ -179,23 +162,8 @@ export default {
       ],
     };
   },
-  //监听属性 类似于data概念
-  computed: {},
-  //监控data中的数据变化
-  watch: {},
-  //方法集合
-
-  //尝试一次接口联调
   created(){
-    // this.$request.get('/popularArticles').then(
-    //     (res) => {
-    //       //干事情
-    //       this.mains1 = res.returnObject.records;
-    //     }
-    // )
-    //     .catch(error=>{
-    //       alert("error");
-    //     })
+
   },
   methods: {
     topublish: function () {
@@ -206,36 +174,10 @@ export default {
     tochange: function () {
       this.change=!this.change;
     },
-    goToAllcourse: function () {
-      this.$router.push({
-        path: "/vod",
-      });
-    },
     goToDetail: function (item) {
-      // this.$router.push({
-      //   path: "/article/:aid",
-      //   query: {
-      //     id: item.href.split("?")[1].split("=")[1],
-      //   },
-      // });
-    },
 
-    show: function () {
-      this.showQRcode = true;
-    },
-    hide: function () {
-      this.showQRcode = false;
     },
   },
-  //生命周期 - 挂载完成（可以访问DOM元素）
-  mounted() {},
-  beforeCreate() {}, //生命周期 - 创建之前
-  beforeMount() {}, //生命周期 - 挂载之前
-  beforeUpdate() {}, //生命周期 - 更新之前
-  updated() {}, //生命周期 - 更新之后
-  beforeDestroy() {}, //生命周期 - 销毁之前
-  destroyed() {}, //生命周期 - 销毁完成
-  activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
 };
 </script>
 <style lang="less" scoped>
@@ -279,7 +221,7 @@ export default {
           // vertical-align: middle;
           display: inline-block;
         }}
-  
+
   .navTap {
     width: 100%;
     height: 1.3333rem;
@@ -393,7 +335,6 @@ export default {
           font-weight: 500;
           color: #333;
           line-height: 0.3733rem;
-          //text-align: center;
         }
 
         div.body {
