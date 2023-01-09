@@ -167,7 +167,6 @@ public class FileController {
             //参数错误
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
         }
-        System.out.println(asUrl);
 
         Integer aid = InfoParser.parseInt(aidStr);
         if(aid == null){
