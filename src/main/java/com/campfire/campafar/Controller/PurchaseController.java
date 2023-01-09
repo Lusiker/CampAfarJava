@@ -185,11 +185,20 @@ public class PurchaseController {
             return objectMapper.writeValueAsString(new RequestResult(CommonPageState.ACCESS_DENIED, 0, null));
         }
 
-        if(!purchaseRepository.userCancelPurchase(uid, purchase)) {
-            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR, 0, null));
+        switch (purchaseRepository.userCancelPurchase(uid, purchase)){
+            case 0 -> {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
+            }
+            case -2 -> {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 4, null));
+            }
+            case -3 -> {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 5, null));
+            }
+            default -> {
+                return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR, 0, null));
+            }
         }
-
-        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
     }
 
     @RequestMapping("/purchases")
