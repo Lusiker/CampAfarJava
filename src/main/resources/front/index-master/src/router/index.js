@@ -62,14 +62,6 @@ const routes = [
     component: () => import("../views/OtherUserView.vue")
   },
   {
-    path: "/trolley",
-    name: "trolley",
-    component: () => import("../views/TrolleyView.vue"),
-    meta: {
-      title: "购物车",
-    },
-  },
-  {
     path: "/order",
     name: "order",
     component: () => import("../views/OrderView.vue"),
@@ -78,19 +70,19 @@ const routes = [
     },
   },
   {
+    path: "/order/:pid",
+    name: "orderDetail",
+    component: () => import("../views/TrolleyView.vue"),
+    meta: {
+      title: "订单详情",
+    },
+  },
+  {
     path: "/purchase",
     name: "purchase",
     component: () => import("../views/PurchaseView.vue"),
     meta: {
       title: "购买",
-    },
-  },
-  {
-    path: "/myarticle",
-    name: "myarticle",
-    component: () => import("../views/MyArticleView.vue"),
-    meta: {
-      title: "我的文章",
     },
   },
   {
