@@ -11,6 +11,7 @@ import com.campfire.campafar.Mapper.UserMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +50,8 @@ public class PurchaseRepository {
                 purchaseMapper.update(null, updateWrapper);
             }
         }
+
+        list.sort((p1, p2) -> Long.compare(p2.getPurchaseCreatedAt().getTime(), p1.getPurchaseCreatedAt().getTime()));
 
         return list;
     }
@@ -177,10 +180,35 @@ public class PurchaseRepository {
         return result.getPurchaseState() == PurchaseStateEnum.FINISHED;
     }
 
-    public boolean userCancelPurchase(int uid, Purchase purchase) {
+    public int userCancelPurchase(int uid, Purchase purchase) {
+        if(purchase.getPurchaseState() != PurchaseStateEnum.CREATED) {
+            //此状态无法取消
+            return -3;
+        }
+
+        Date now = new Date();
+        if(now.getTime() - purchase.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
+            UpdateWrapper<Purchase> wrapper1 = new UpdateWrapper<Purchase>().eq("purchase_id", purchase.getPurchaseId());
+            //订单已超时，无法取消
+            wrapper1.set("purchase_state", PurchaseStateEnum.TIMEOUT);
+
+            if(purchaseMapper.update(null, wrapper1) != 1) {
+                //服务器错误，更新失败
+                return -1;
+            }
+
+            //订单超时，无法取消
+            return -2;
+        }
+
         purchase.setPurchaseState(PurchaseStateEnum.CANCELLED);
         UpdateWrapper<Purchase> wrapper = new UpdateWrapper<Purchase>().eq("user_id", uid);
 
-        return purchaseMapper.update(purchase, wrapper) == 1;
+        if(purchaseMapper.update(purchase, wrapper) != 1){
+            return -1;
+        }
+
+        //取消成功
+        return 0;
     }
 }
