@@ -74,6 +74,7 @@
             >
               <v-btn
                   :color="'#3aafd9'"
+                  @click="createPurchase"
               >
                 <span style="font-size: 14px">前往购买</span>
               </v-btn>
@@ -135,7 +136,60 @@ export default {
     }
   },
   methods: {
+    createPurchase() {
+      if(this.$store.getters.loginState) {
+        this.$request.post('/purchase/create?uid=' + this.$store.getters.user.userId + "&type=article&tid=" + this.articleId)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      Toast.success('订单创建成功')
 
+                      this.$router.push('/order/' + res.returnObject)
+                      break
+                    }
+                    case 1: {
+                      Toast.fail('服务器错误')
+                      break
+                    }
+                    case -1: {
+                      switch (res.specificCode) {
+                        case 1: {
+                          Toast.fail('请求错误')
+
+                          break
+                        }
+                        case 2: {
+                          Toast.fail(this.$store.getters.user.userHasActivated ? '用户不存在或已注销' : '用户未激活')
+
+                          break
+                        }
+                        case 3: {
+                          Toast.fail('用户已购买过此项目')
+
+                          break
+                        }
+                        case 4: {
+                          Toast.fail('用户有尚未支付的订单')
+                          this.$router.push('/order')
+                        }
+                      }
+
+                      break
+                    }
+                    default: {
+                      Toast.fail('未知错误')
+
+                      break
+                    }
+                  }
+                }
+            )
+      } else {
+        this.$store.dispatch('intercept','article/' + this.articleId)
+        this.$router.push('/login-password')
+      }
+    }
   },
   mounted() {
     this.articleId = this.$route.params.aid;
