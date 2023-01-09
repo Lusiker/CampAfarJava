@@ -1,4 +1,9 @@
 package com.campfire.campafar.Mapper;
 
-public interface TagMapper {
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.campfire.campafar.Entity.Tag;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface TagMapper extends BaseMapper<Tag> {
 }
