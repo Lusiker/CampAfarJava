@@ -25,10 +25,11 @@ public class Purchase {
     private Date purchaseFinishedAt;
     private String purchaseSerialId; //not used
 
-    public Purchase(int uid, PurchaseTypeEnum type, int targetId) {
+    public Purchase(int uid, PurchaseTypeEnum type, int targetId, BigDecimal value) {
         this.userId = uid;
         this.targetType = type;
         this.targetId = targetId;
+        this.purchaseValue = value;
         this.purchaseSerialId = "";
     }
 }
