@@ -55,7 +55,7 @@
         <h3>浏览量:{{article.articleViewCount}}</h3>
       </v-card>
       <v-divider/>
-      <v-card  height="200px">
+      <v-card width="100%" height="auto" style="padding: 5px;overflow-x: clip">
 
         <div class="dialog-content">
           <div class="dialog" v-html="article.articleDetail"></div>
