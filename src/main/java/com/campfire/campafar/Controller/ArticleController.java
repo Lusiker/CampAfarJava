@@ -47,7 +47,7 @@ public class ArticleController {
                               @RequestParam(value = "orderBy",defaultValue = "0")Integer orderBy,
                               @RequestParam(value = "free", defaultValue = "false")String freeStr) throws JsonProcessingException {
         //构造分页构造器
-        int pageSize = 6;
+        int pageSize = 5;
         Page pageInfo = new Page(page, pageSize);
         //构造条件构造器
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
@@ -64,6 +64,7 @@ public class ArticleController {
         queryWrapper.select(
                 Article::getArticleTitle,
                 Article::getArticleId,
+                Article::getUserId,
                 Article::getArticleCreatedAt,
                 Article::getArticleIsFree,
                 Article::getArticlePrice,
@@ -98,6 +99,10 @@ public class ArticleController {
     @RequestMapping("articles/articleCount")
     public String getArticleTotalCount(@RequestParam(value = "free",defaultValue = "false")String freeStr) throws JsonProcessingException {
         Boolean free = InfoParser.parseBoolean(freeStr);
+        if(free == null) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED,1,null));
+        }
+
         long result;
         if(free){
             result = articleRepository.getArticleCount();
