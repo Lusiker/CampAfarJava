@@ -16,11 +16,6 @@
       </van-swipe>
     </div>
 
-
-    <div class="blank">
-      <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
-    </div>
-
     <div class="gzh-box">
       <div class="gzh-left">
         <div class="img">
@@ -46,198 +41,68 @@
         </div>
       </div>
 
-<!--      最热文章-->
+
       <div class="section-box-body" v-if="change">
         <v-list style="width: 100%;background-color: #f3f6f9">
-          <Artice v-for="item in mains1" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
+          <Article v-for="item in mains1" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
         </v-list>
-<!--        <div class="" v-for="item in mains1" :key="item.articleId">-->
-<!--          <div class="item" @click.stop="goToDetail(item)">-->
-<!--            <div class="item-comp">-->
-<!--              <div class="img">-->
-<!--                <img :src="item.bannerSrc" alt="" />-->
-<!--              </div>-->
-<!--              <div class="text">-->
-<!--                <div class="text-title">{{ item.articleTitle }}</div>-->
-<!--                <div class="text-info">-->
-<!--                  <div class="text-info-left">{{ "浏览量："+item.articleViewCount}}</div>-->
-<!--                  <div class="text-info-right" v-if="item.articlePrice > 0">-->
-<!--                    <span class="charge"> ￥ </span>-->
-<!--                    {{ item.articlePrice }}-->
-<!--                  </div>-->
-<!--                  <div class="free" v-else>-->
-<!--                    <div style="color: grey">免费</div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
       </div>
 
-<!--      热门文章-->
       <div class="section-box-body" v-else>
         <v-list style="width: 100%;background-color: #f3f6f9">
-          <Artice v-for="item in mains2" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
+          <Article v-for="item in mains2" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
         </v-list>
-<!--        <div class="" v-for="item in mains2" :key="item.articleId">-->
-<!--          <div class="item" @click.stop="goToDetail(item)">-->
-<!--            <div class="item-comp">-->
-<!--              <div class="img">-->
-<!--                <img :src="item.bannerSrc" alt="" />-->
-<!--              </div>-->
-<!--              <div class="text">-->
-<!--                <div class="text-title">{{ item.articleTitle }}</div>-->
-<!--                <div class="text-info">-->
-<!--                  <div class="text-info-left">{{ "浏览量："+item.articleViewCount}}</div>-->
-<!--                  <div class="text-info-right" v-if="item.articlePrice > 0">-->
-<!--                    <span class="charge"> ￥ </span>-->
-<!--                    {{ item.articlePrice }}-->
-<!--                  </div>-->
-<!--                  <div class="free" v-else>-->
-<!--                    <div style="color: grey">免费</div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
       </div>
-    </div>
-
-    <div class="footer-box">
-      <!-- <div class="inline-img">
-        <img src="../assets/img/watermark@2x.png" alt="" />
-      </div> -->
     </div>
     <kp-foot-nav type="home"></kp-foot-nav>
   </div>
 </template>
 
 <script>
-import Artice from '@/components/Article.vue';
+import Article from '@/components/Article.vue';
 import Vue from "vue";
 import { Swipe, SwipeItem, Lazyload } from "vant";
-import axios from 'axios'
 Vue.use(Swipe);
 Vue.use(SwipeItem);
 Vue.use(Lazyload);
 import KPBlank from "@/components/KPBlank.vue";
 import KPCourseItem from "@/components/KPCourseItem.vue";
 import KPFootNav from "@/components/kp-foot-nav.vue";
-import HomeCard from "@/components/Article.vue";
+
 export default {
   components: {
-    Artice,
+    Article,
     KPBlank,
     KPCourseItem,
     "kp-foot-nav": KPFootNav,
   },
-  // create(){
-  //   axios.get('/popularArticles',{
-  //     params:{
-  //       mains1 : res.returnObject.records
-  //     },
-  //   }).then(function(res){
-  //     console.log(res);//处理成功的函数 相当于success
-  //   }).catch(function(error){
-  //     console.log(error)//错误处理 相当于error
-  //   })
-  // },
-
   data() {
-    //这里存放数据
     return {
-
       change: true,
       blocks: [],
       slides: [{src:require('../assets/img/1.jpg')}, {src:require('../assets/img/2.jpg')}, {src:require('../assets/img/3.jpg')}],
-      navs: [],
-      blank: {},
-      h5GzhV1: [],
-      mains1: [
-        // {
-        //   picture:require('../assets/img/1.jpg'),title:'前后端如何数据联调1',uid:'1',price:'2'
-        // },
-        // {
-        //   picture:require('../assets/img/2.jpg'),title:'vue生命周期的讲解1',uid:'3',price:'4'
-        // },
-
-      ],//热门
-      mains2: [
-        // {
-        //   picture:require('../assets/img/3.jpg'),title:'前后端如何数据联调2',uid:'1',price:'2'
-        // },
-        // {
-        //   picture:require('../assets/img/logo.png'),title:'vue生命周期的讲解2',uid:'3',price:'4'
-        // },
-      ],//最新
-      showQRcode: false,
-      tables: [
-        {
-          src: require("../assets/img/icon-home-h@2x.png"),
-          text: "首页",
-        },
-        {
-          src: require("../assets/img/马上提问1.png"),
-          text: "知识",
-        },
-        {
-          src: require("../assets/img/icon-study-n@2x.png"),
-          text: "问答",
-        },
-        {
-          src: require("../assets/img/icon-me-n@2x.png"),
-          text: "我的",
-        },
-      ],
+      mains1: [],//热门
+      mains2: [],//最新
     };
   },
   mounted() {
 
+    this.$request.get('/popularArticles')
+        .then(
+            (res) => {
+              //干事情
+              this.mains1 = res.returnObject.records;
+            }
+        )
 
-    this.$request.get('/popularArticles').then(
-        (res) => {
-          //干事情
-          this.mains1 = res.returnObject.records;
-        }
-    ).catch(error=>{
-          alert("error");
-    })
-
-    this.$request.get('/latestArticles').then(
-        (res) => {
-          //干事情
-          this.mains2 = res.returnObject.records;
-        }
-    ).catch(error=>{
-      alert("error");
-    })
-
-  //   this.$request.get("/acquire/articleBanner?aid=" + this.item.articleId)
-  //       .then(
-  //           (res) => {
-  //             let src;
-  //             switch (res.stateEnum.state) {
-  //               case 0: {
-  //                 if (res.returnObject === null) {
-  //                   src = this.$store.getters.defaultBannerSrc
-  //                 } else {
-  //                   src = res.returnObject
-  //                 }
-  //
-  //                 break
-  //               }
-  //               default: {
-  //                 src = this.$store.getters.defaultBannerSrc
-  //               }
-  //             }
-  //
-  //             this.mains1.bannerSrc = src
-  //           }
-  //       )
+    this.$request.get('/latestArticles')
+        .then(
+            (res) => {
+              //干事情
+              this.mains2 = res.returnObject.records;
+            }
+        )
   },
-
   methods: {
     handleInfo:function (){
       this.$request.get('/popularArticles').then(
@@ -264,13 +129,8 @@ export default {
       });
     },
     tochange: function () {
-
       this.change=!this.change;
     },
-    goToDetail: function (item) {
-
-    },
-
     getDateString(rawDate) {
       let t = new Date(rawDate)
       let result = t.getFullYear() + "年" + (t.getMonth() + 1) +"月" + t.getDate() + "日  " + t.getHours() + ":"
