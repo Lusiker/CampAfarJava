@@ -10,20 +10,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 60px;margin-bottom: 60px" v-if="num === 0">
-        <van-pagination
-            v-model="page"
-            :page-count="totalPage"
-            items-per-page="5"
-            @change="getPage"
-        />
-        <div v-if="!loading">
-          <v-list style="width: 100%;background-color: #f3f6f9">
-            <InfoCard v-for="item in articles[page]" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
-          </v-list>
-        </div>
-      </div>
-      <div style="margin-top: 60px;margin-bottom: 60px" v-else>
+      <div style="margin-top: 60px;margin-bottom: 60px">
         <van-pagination
             v-model="page"
             :page-count="totalPage"
