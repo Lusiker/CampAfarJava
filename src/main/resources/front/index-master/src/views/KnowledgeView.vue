@@ -1,126 +1,175 @@
-<!--  -->
 <template>
-    <div class="container">
+    <div class="container1">
       <div class="title-box">
-        <div class="top-box">
-          <!-- <div class="back-img">
-            <img src="../assets/img/icon-back.png" alt="" @click="goToback" />
-          </div> -->
-          <div class="title">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;知识列表</div>
-          <div class="button" @click="show">
-            <div class="button-text">
-              <span>筛选</span>
-              <img src="../assets/img/icon-filter.png" alt="" />
-            </div>
-            <div class="btn-box" v-show="isShow">
-              <div class="item" @click="filtrate(0)">全部</div>
-              <div class="item" v-for="item in choice" :key="item.id" @click="filtrate(item.id)">
-                {{ item.name }}
-              </div>
-            </div>
-            <div class="mask" v-show="isShow" @click.stop="hide"></div>
-          </div>
-        </div>
-
         <div class="bottom-box">
-          <div class="left active" @click="goTofree">全部</div>
-          <div class="right" @click="goTovod">免费</div>
+          <div class="left active" @click="setAll">全部</div>
+          <div class="right" @click="setFree">免费</div>
           <!-- 12 -->
 
           <!-- 12 -->
         </div>
-
       </div>
 
-
-
-      <div class="box-body" v-if="num === 0">
-
+      <div style="margin-top: 60px;margin-bottom: 60px" v-if="num === 0">
         <van-pagination
-          v-model="page"
-          :page-count="totalPage"
-          items-per-page="5"
+            v-model="page"
+            :page-count="totalPage"
+            items-per-page="5"
+            @change="getPage"
         />
+        <div v-if="!loading">
+          <v-list style="width: 100%;background-color: #f3f6f9">
+            <InfoCard v-for="item in articles[page]" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
+          </v-list>
+        </div>
       </div>
-      <div class="box-body" v-else>
-
+      <div style="margin-top: 60px;margin-bottom: 60px" v-else>
+        <van-pagination
+            v-model="page"
+            :page-count="totalPage"
+            items-per-page="5"
+            @change="getPage"
+        />
+        <div v-if="!loading">
+          <v-list style="width: 100%;background-color: #f3f6f9">
+            <InfoCard v-for="item in articles[page]" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
+          </v-list>
+        </div>
       </div>
       <kp-foot-nav type="knowledge"></kp-foot-nav>
-      <div v-for="article in articles" :key="article.articleId">
-
-      </div>
     </div>
-
   </template>
 
   <script>
   import KPFootNav from "@/components/kp-foot-nav.vue";
-  import KPCourseItem from "@/components/KPCourseItem.vue";
+  import { Toast } from 'vant';
+  import InfoCard from '@/components/InfoCard.vue';
 
   export default {
-    //import引入的组件需要注入到对象中才能使用
     components: {
-      KPCourseItem,
+      InfoCard,
       "kp-foot-nav": KPFootNav,
     },
     data() {
       //这里存放数据
       return {
+        filterState: 1,
         page: 1,
         totalPage: 1,
         num: 0,
-        articles: [{articleId:0},{articleId:1},{articleId:2}],
-        frees: {},
-        isShow: false,
-        choice: [],
+        articles: {},
+        loading: true,
       };
     },
     computed: {},
     watch: {},
     methods: {
-      show: function () {
-        this.isShow = true;
-      },
-      hide: function () {
-        this.isShow = false;
-      },
-      goTofree: function () {
+      setAll: function () {
         this.num = 0;
+        this.page = 1;
         let left = document.querySelector(".left");
         let right = document.querySelector(".right");
         left.className = "left active";
         right.className = "right";
+
+        this.getArticles(false)
       },
-      goTovod: function () {
+      setFree: function () {
         this.num = 1;
+        this.page = 1;
         let left = document.querySelector(".left");
         let right = document.querySelector(".right");
         left.className = "left";
         right.className = "right active";
+
+        this.getArticles(true)
+      },
+      getArticles(free) {
+        this.loading = true
+        let url = '/articles?page=' + this.page + "&orderBy=0"
+        if(free){
+          url = url + "&free=true"
+        }
+        this.$request(url).then(
+            (res) =>{
+              switch (res.stateEnum.state) {
+                case 0: {
+                  this.articles[this.page] = res.returnObject.records
+                  this.loading = false
+
+                  break
+                }
+                default: {
+                  Toast.fail("获取文章信息失败")
+                }
+              }
+            }
+        )
+      },
+      getPage() {
+        this.loading = true
+        let url = '/articles?page=' + this.page
+        if(this.num === 1) {
+          url = url + '&free=true'
+        }
+        this.$request.get(url)
+            .then(
+                (res) => {
+                  switch (res.stateEnum.state) {
+                    case 0: {
+                      this.articles[this.page] = res.returnObject.records
+                      this.loading = false
+                      break
+                    }
+                    default: {
+                      Toast.fail("获取文章失败（页码：" + this.page + "）")
+                      break
+                    }
+                  }
+                }
+            )
       },
       loadPageCount() {
         this.$request.get('/articles/articleCount').then(
             (res) => {
               let count = res.returnObject
-              this.totalPage = Math.ceil(count / 5)
+              this.totalPage = count / 5 + (count % 5 === 0 ? 0 : 1)
             }
         )
+      },
+      getDateString(rawDate) {
+        let t = new Date(rawDate)
+        let result = t.getFullYear() + "年" + (t.getMonth() + 1) +"月" + t.getDate() + "日  " + t.getHours() + ":"
+        if(t.getMinutes() < 10) {
+          result += "0" + t.getMinutes() + ":"
+        } else {
+          result += t.getMinutes() + ":"
+        }
+
+        if(t.getSeconds() < 10) {
+          result += "0" + t.getSeconds()
+        } else {
+          result += t.getSeconds()
+        }
+
+        return result
       }
     },
     beforeMount() {
       this.loadPageCount()
+      this.getArticles()
     }
   };
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .article-card {
     width: 100%;
     height: auto;
   }
 
-  div.container {
-    position: absolute;
+  div.container1 {
+    position: relative;
     left: 0;
     top: 0;
     overflow-y: scroll;
@@ -136,18 +185,15 @@
       padding: 0 0.4rem;
       background-color: #fff;
       line-height: 0.8rem;
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
+      z-index: 1;
       div.top-box {
         width: 100%;
         height: 1.3333rem;
         background: #fff;
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
         div.back-img {
           width: 0.64rem;
@@ -201,7 +247,6 @@
             width: 4.4267rem;
             height: auto;
             box-sizing: border-box;
-            padding: 0 0.4rem;
             border-radius: 5px;
             background-color: #fff;
             div.item {
@@ -268,8 +313,9 @@
       background: #f3f6f9;
     }
     div.box-body {
-      margin-top: 100px;
-      padding: 0.6667rem 0.4rem 0.1333rem 0.4rem;
+      margin-top: 200px;
+      height: 100%;
+      position: absolute;
     }
   }
   </style>
