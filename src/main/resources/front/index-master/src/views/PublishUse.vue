@@ -41,7 +41,6 @@
 
     <div class="box-body">
       <h2>编辑正文</h2>
-      <div>{{ content }}</div>
       <van-divider/>
       <van-notice-bar
           :text="'图片数量不应超过10张(当前' + imageCount + ')'"
