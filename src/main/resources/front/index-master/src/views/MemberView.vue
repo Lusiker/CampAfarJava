@@ -57,7 +57,7 @@
             </div>
           </div>
 
-          <div class="grid-item" @click="showArticleList = !showArticleList">
+          <div class="grid-item" @click="openArticleDrawer">
             <div class="icon">
               <div class="icon-img">
                 <img src="../assets/img/icon-list@2x.png" alt="" />
@@ -66,7 +66,7 @@
             </div>
           </div>
 
-          <div class="grid-item" @click="showChargeDrawer = !showChargeDrawer">
+          <div class="grid-item" @click="openChargeDrawer">
             <div class="icon">
               <div class="icon-img">
                 <img src="../assets/img/钱.png" alt="" />
@@ -74,17 +74,6 @@
               <div class="text">充值</div>
             </div>
           </div>
-
-          <div class="grid-item" @click="totestTrolley">
-            <div class="icon">
-              <div class="icon-img">
-                <img src="../assets/img/钱.png" alt="" />
-              </div>
-              <div class="text">购物车</div>
-            </div>
-          </div>
-
-
         </div>
       </div>
     </div>
@@ -198,6 +187,16 @@ export default {
         )
       }
     },
+    openChargeDrawer() {
+      if(this.loginState) {
+        this.showChargeDrawer = !this.showChargeDrawer
+      }
+    },
+    openArticleDrawer() {
+      if(this.loginState) {
+        this.showArticleList = !this.showArticleList
+      }
+    },
     tologin: function () {
       this.$router.push({
         path: "/login-password",
@@ -215,19 +214,16 @@ export default {
       }
     },
     toOrder: function () {
-      this.$router.push({
-         path: "/order",
-         });
-    },
-    toMyArticle: function(){
-      this.$router.push({
-          path: "/myarticle",
+      if(!this.loginState) {
+        this.$router.push({
+          path: "/login-password",
         });
-    },
-    totestTrolley: function(){
-      this.$router.push({
-        path: "/trolley",
-      });
+        this.$store.dispatch('intercept', 'order')
+      } else {
+        this.$router.push({
+          path: "/order",
+        });
+      }
     },
   },
   mounted() {
