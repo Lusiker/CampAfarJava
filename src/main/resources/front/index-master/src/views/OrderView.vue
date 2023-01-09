@@ -53,6 +53,7 @@ export default {
   },
 };
 </script>
+
 <style lang="less" scoped>
 div.container {
   box-sizing: border-box;
