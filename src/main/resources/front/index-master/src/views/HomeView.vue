@@ -16,7 +16,7 @@
       </van-swipe>
     </div>
 
-    
+
     <div class="blank">
       <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
     </div>
@@ -373,8 +373,6 @@ export default {
         width: 1.3333rem;
         height: 1.3333rem;
         margin-right: 0.2667rem;
-        //border-radius: 50%;
-        //overflow: hidden;
         img {
           width: 1.3333rem;
           height: 1.3333rem;
