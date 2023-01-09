@@ -51,11 +51,12 @@
           <div class="grid-item" @click="toOrder">
             <div class="icon">
               <div class="icon-img">
-                <img src="../assets/img/icon-list@2x.png" alt="" />
+                <img src="../assets/img/icon-check-n.png" alt="" />
               </div>
               <div class="text">我的订单</div>
             </div>
           </div>
+
           <div class="grid-item" @click="toMyArticle">
             <div class="icon">
               <div class="icon-img">
@@ -65,25 +66,14 @@
             </div>
           </div>
 
-          <div class="grid-item" @click="totestotheruser">
-            <div class="icon">
-              <div class="icon-img">
-                <img src="../assets/img/钱包.png" alt="" />
-              </div>
-              <div class="text">test用户信息跳转</div>
-            </div>
-          </div>
-
-
-          <div class="grid-item" @click="totestpurchase">
+          <div class="grid-item" @click="showChargeDrawer = !showChargeDrawer">
             <div class="icon">
               <div class="icon-img">
                 <img src="../assets/img/钱.png" alt="" />
               </div>
-              <div class="text">test购买跳转</div>
+              <div class="text">充值</div>
             </div>
           </div>
-
 
           <div class="grid-item" @click="totestTrolley">
             <div class="icon">
@@ -99,29 +89,50 @@
       </div>
     </div>
 
+    <van-action-sheet v-model="showChargeDrawer" title="充值">
+      <van-col class="submit-button">
+        <van-row>
+          <van-field label="输入充值金额" type="number" :disabled="!hasActivate" v-model="chargeValue"></van-field>
+          <van-notice-bar
+              :text="'您尚未激活账号，无法进行此操作'"
+              v-if="!hasActivate"
+          />
+          <van-notice-bar
+              :text="'注意：金额应大于零'"
+              v-if="chargeValue != 0 && chargeValue.length > 0"
+          />
+        </van-row>
+        <br/><br/>
+        <van-divider/>
+        <van-row>
+          <div><van-button
+              :disabled="!chargeAmountValid"
+              :color="'#6598e5'"
+              block
+              @click="charge"
+          >充值</van-button></div>
+        </van-row>
+      </van-col>
+    </van-action-sheet>
 
     <kp-foot-nav type="member"></kp-foot-nav>
   </div>
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import 《组件名称》 from '《组件路径》';
-// a.1 引入vant 轮播图相关组件
-
 import KPFootNav from "@/components/kp-foot-nav.vue";
+import { Toast } from 'vant';
 
 export default {
-  //import引入的组件需要注入到对象中才能使用
   components: {
     "kp-foot-nav": KPFootNav,
   },
   data() {
-    //这里存放数据
-
     return {
       collapsed: true,
       avatarLoading: true,
+      showChargeDrawer: false,
+      chargeValue: '0.00'
     };
   },
   computed: {
@@ -136,33 +147,50 @@ export default {
     },
     userState() {
       switch (this.$store.getters.user.userState){
-        case "RESTRICTED": return "受限制(尚未激活)"
+        case "RESTRICTED": return "受限制" + (this.$store.getters.user.userHasActivated ? '' : '(尚未激活)')
         case "NORMAL": return "正常"
         case "BANNED": return "被封禁"
         case "LOGOFF": return "已注销"
         default: return "未知状态"
       }
-    }
+    },
+    chargeAmountValid() {
+      if(isNaN(this.chargeValue)) {
+        return false
+      }
+
+      return Number(this.chargeValue) > 0;
+    },
+    hasActivate() {
+      return this.$store.getters.user.userHasActivated
+    },
   },
-  //监控data中的数据变化
-  watch: {},
-  //方法集合
   methods: {
+    charge() {
+      if(this.loginState) {
+        this.$request.post('/user/charge?uid=' + this.user.userId + '&value=' + this.chargeValue).then(
+          (res) => {
+            switch (res.stateEnum.state) {
+              case 0 :{
+                Toast.success("充值成功")
+                this.$store.dispatch('setNewPoint', res.returnObject)
+                this.chargeValue = '0.00'
+                this.showChargeDrawer = false
+
+                return
+              }
+              default: {
+                Toast.fail("充值失败")
+              }
+            }
+          }
+        )
+      }
+    },
     tologin: function () {
       this.$router.push({
         path: "/login-password",
       });
-    },
-    toMyQuestion: function () {
-      if (this.token) {
-        this.$router.push({
-          path: "/member/promocode",
-        });
-      } else {
-        this.$router.push({
-          path: "/login-password",
-        });
-      }
     },
     goTousers: function () {
       if (this.loginState) {
@@ -176,15 +204,6 @@ export default {
       }
     },
     toOrder: function () {
-      // if (this.token) {
-      //   this.$router.push({
-      //     path: "/order",
-      //   });
-      // } else {
-      //   this.$router.push({
-      //     path: "/login-password",
-      //   });
-      // }
       this.$router.push({
          path: "/order",
          });
@@ -199,24 +218,7 @@ export default {
         path: "/trolley",
       });
     },
-    totestotheruser: function(){
-      this.$router.push({
-        path: "/otheruser",
-      });
-    },
-    totestpurchase: function(){
-      this.$router.push({
-        path: "/purchase",
-      });
-    },
-    tosetting: function () {
-      this.$router.push({
-        path: "/setting",
-      });
-    },
-
   },
-  //生命周期 - 挂载完成（可以访问DOM元素）
   mounted() {
     //若已登录，请求头像
     if(this.loginState) {
@@ -244,13 +246,6 @@ export default {
       }
     }
   },
-  beforeCreate() {}, //生命周期 - 创建之前
-  beforeMount() {}, //生命周期 - 挂载之前
-  beforeUpdate() {}, //生命周期 - 更新之前
-  updated() {}, //生命周期 - 更新之后
-  beforeDestroy() {}, //生命周期 - 销毁之前
-  destroyed() {}, //生命周期 - 销毁完成
-  activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
 };
 </script>
 
@@ -259,7 +254,10 @@ div.info {
   width: 100%;
   align-items: start;
 }
-
+.submit-button {
+  width: 100%;
+  text-align: center;
+}
 div.container {
   background: #f3f6f9;
   div.user-icon {
