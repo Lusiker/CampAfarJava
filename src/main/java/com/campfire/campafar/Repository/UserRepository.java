@@ -8,6 +8,7 @@ import com.campfire.campafar.Mapper.UserMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Repository
@@ -94,6 +95,16 @@ public class UserRepository {
         if(user.getUserState() == UserStateEnum.RESTRICTED) {
             wrapper.set("user_state", UserStateEnum.NORMAL);
         }
+
+        return userMapper.update(null, wrapper) == 1;
+    }
+
+    public boolean charge(User user, BigDecimal value) {
+        user.setUserPoint(user.getUserPoint().add(value));
+
+        UpdateWrapper<User> wrapper = new UpdateWrapper<User>()
+                .eq("user_id",user.getUserId())
+                .set("user_point", user.getUserPoint());
 
         return userMapper.update(null, wrapper) == 1;
     }
