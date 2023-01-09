@@ -1,61 +1,80 @@
 <!--  -->
 <template>
-  <div class="container">
+  <div class="container1">
     <div class="title-box">
       <img src="../assets/img/icon-back.png" alt="" @click="toBack" />
       <div class="text">我的订单</div>
     </div>
     <div class="body">
-      <div class="order-item" v-for="item in mains" :key="item.id">
-        <div class="title">
-          <div class="time">{{ item.created_at | timeago }}</div>
-          <div class="status">{{ item.status_text }}</div>
+      <v-list>
+        <div v-if="loaded">
+          <PurchaseCard v-for="item in purchases" :item="item" :key="item.purchaseId" :get-date-string="getDateString" />
         </div>
-        <div class="bottom-box">
-          <div class="left">
-            <div class="name">{{ item.goods[0].goods_name }}</div>
-            <div class="payment">{{ item.payment_text }}</div>
-          </div>
-          <div class="right">
-            <span>￥</span>
-            {{ item.goods[0].goods_ori_charge }}
-          </div>
-        </div>
-      </div>
+      </v-list>
     </div>
   </div>
 </template>
 
 <script>
-//这里可以导入其他文件（比如：组件，工具js，第三方插件js，json文件，图片文件等等）
-//例如：import 《组件名称》 from '《组件路径》';
+import { Toast } from 'vant';
+import PurchaseCard from '@/components/PurchaseCard.vue';
 
 export default {
-  //import引入的组件需要注入到对象中才能使用
-  components: {},
+  components: { PurchaseCard },
   data() {
     //这里存放数据
     return {
-      mains: {},
+      loaded: false,
+      purchases: [],
     };
   },
-  //监听属性 类似于data概念
-  computed: {},
-  //监控data中的数据变化
-  watch: {},
-  //方法集合
   methods: {
     toBack: function () {
       this.$router.push({
         path: "/member",
       });
     },
+    getDateString(rawDate) {
+      let t = new Date(rawDate)
+      let result = t.getFullYear() + "年" + (t.getMonth() + 1) +"月" + t.getDate() + "日  " + t.getHours() + ":"
+      if(t.getMinutes() < 10) {
+        result += "0" + t.getMinutes() + ":"
+      } else {
+        result += t.getMinutes() + ":"
+      }
+
+      if(t.getSeconds() < 10) {
+        result += "0" + t.getSeconds()
+      } else {
+        result += t.getSeconds()
+      }
+
+      return result
+    }
   },
+  mounted() {
+    if(!this.$store.getters.loginState) {
+      this.$store.dispatch('intercept','order')
+      this.$router.push('/login-password')
+    } else {
+      this.loaded = false
+      this.$request.get('/purchases?uid=' + this.$store.getters.user.userId).then(
+          (res) => {
+            if(res.stateEnum.state === 0) {
+              this.purchases = res.returnObject
+              this.loaded = true
+            } else {
+              Toast.fail("获取订单失败")
+            }
+          }
+      )
+    }
+  }
 };
 </script>
 
 <style lang="less" scoped>
-div.container {
+div.container1 {
   box-sizing: border-box;
   padding-top: 50px;
   background: #f6f6f6;
