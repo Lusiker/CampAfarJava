@@ -44,7 +44,7 @@
 
       <div class="section-box-body" v-if="change">
         <div v-if="loaded1">
-          <v-list style="width: 100%;background-color: #f3f6f9">
+          <v-list style="width: 100%;">
             <Article v-for="item in mains1" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
           </v-list>
         </div>
@@ -52,7 +52,7 @@
 
       <div class="section-box-body" v-else>
         <div v-if="loaded2">
-        <v-list style="width: 100%;background-color: #f3f6f9">
+        <v-list style="width: 100%;">
           <Article v-for="item in mains2" :item="item" :get-date-string="getDateString" :key="item.articleId"/>
         </v-list>
         </div>
@@ -112,25 +112,6 @@ export default {
         )
   },
   methods: {
-    handleInfo:function (){
-      this.$request.get('/popularArticles').then(
-          (res) => {
-            console.log(res);
-            this.mains1 = res.returnObject.records;
-          }
-      ).catch(error=>{
-        alert(error)
-      })
-
-      this.$request.get('/latestArticles').then(
-          (res) => {
-            console.log(res);
-            this.mains2 = res.returnObject.records;
-          }
-      ).catch(error=>{
-        alert(error)
-      })
-    },
     topublish: function () {
       this.$router.push({
         path: "/publish",
