@@ -12,7 +12,7 @@
       <div class="user-body">
         <div class="name">{{ user.userName }}</div>
         <div class="email">{{user.userEmail}}</div>
-        <div class="level">经验值：{{ user.userExp }}</div>
+<!--        <div class="level">经验值：{{ user.userExp }}</div>-->
 
       </div>
       <div class="user-back">

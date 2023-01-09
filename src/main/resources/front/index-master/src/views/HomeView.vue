@@ -86,7 +86,7 @@ export default {
       loaded2: false,
       change: true,
       blocks: [],
-      slides: [{src:require('../assets/img/1.jpg')}, {src:require('../assets/img/2.jpg')}, {src:require('../assets/img/3.jpg')}],
+      slides: [{src:require('../assets/img/banner1.jpg')}, {src:require('../assets/img/banner2.jpg')}, {src:require('../assets/img/banner3.jpg')}],
       mains1: [],//热门
       mains2: [],//最新
     };
