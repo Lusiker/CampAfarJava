@@ -40,6 +40,11 @@ const actions = {
       context.commit("UPDATE_USER_ACTIVATION_STATE")
     }
   },
+  setNewPoint(context, newPoint) {
+    if(state.loginState) {
+      context.commit('ADD_VALUE_TO_POINT',newPoint)
+    }
+  },
 
   cacheAvatar(context,src) {
     if(state.loginState){
@@ -154,6 +159,10 @@ const mutations = {
       state.currentUser.userState = "NORMAL"
       sessionStorage.setItem('userState',"NORMAL")
     }
+  },
+  ADD_VALUE_TO_POINT(state, newPoint) {
+    state.currentUser.userPoint = newPoint
+    sessionStorage.setItem('userPoint',newPoint)
   },
 
   CACHE_AVATAR(state,src) {
