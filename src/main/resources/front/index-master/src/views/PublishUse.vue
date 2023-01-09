@@ -216,7 +216,14 @@ export default {
       }
     },
   },
+  beforeMount() {
+  },
   mounted() {
+    if(!this.loginState) {
+      this.$store.dispatch('intercept','publish')
+      this.$router.push('/login-password')
+    }
+
     if(this.$store.getters.user.userState === "RESTRICTED") {
       Notify({
         message: '您尚未验证邮箱，无法发表文章',
