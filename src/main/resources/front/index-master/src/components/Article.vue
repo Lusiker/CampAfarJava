@@ -6,15 +6,15 @@
           <div class="article-banner">
             <van-image
                 :src="bannerSrc"
-                width="150px"
+                width="130px"
                 height="120px"
                 fit="fill"
             ></van-image>
           </div>
         </van-col>
         <van-col class="article-info">
-          <h2>标题：{{item.articleTitle}}</h2>
-          <h4>发布于：{{getDateString(item.articleCreatedAt)}}</h4>
+          <h2>标题：{{reducedTitle(item.articleTitle)}}</h2>
+          <h5>发布于：{{getDateString(item.articleCreatedAt)}}</h5>
           <span>浏览量：{{item.articleViewCount}}</span>
           <div v-if="item.articleIsFree">
             <strong style="color: grey;"><span style="font-size: 16px">免费</span></strong>
@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: 'InfoCard',
+  name: 'Article',
   props: ['item', 'getDateString'],
   data() {
     return {
@@ -38,6 +38,14 @@ export default {
     }
   },
   methods: {
+    reducedTitle(title) {
+      if(title.length > 6){
+        let reduced = title.substring(0, 5)
+        return reduced + '...'
+      }
+
+      return title
+    },
     toArticle() {
       this.$router.push('/article/' + this.item.articleId)
     }
