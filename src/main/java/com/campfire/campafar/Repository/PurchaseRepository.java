@@ -40,14 +40,16 @@ public class PurchaseRepository {
         List<Purchase> list = purchaseMapper.selectList(wrapper);
         Date now = new Date();
         for(Purchase p : list) {
-            if(now.getTime() - p.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
-                //订单已超时，无法支付
-                p.setPurchaseState(PurchaseStateEnum.TIMEOUT);
-                UpdateWrapper<Purchase> updateWrapper = new UpdateWrapper<Purchase>()
-                        .eq("purchase_id", p.getPurchaseId())
-                        .set("purchase_state", p.getPurchaseState());
+            if(p.getPurchaseState() == PurchaseStateEnum.CREATED) {
+                if (now.getTime() - p.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
+                    //订单已超时，无法支付
+                    p.setPurchaseState(PurchaseStateEnum.TIMEOUT);
+                    UpdateWrapper<Purchase> updateWrapper = new UpdateWrapper<Purchase>()
+                            .eq("purchase_id", p.getPurchaseId())
+                            .set("purchase_state", p.getPurchaseState());
 
-                purchaseMapper.update(null, updateWrapper);
+                    purchaseMapper.update(null, updateWrapper);
+                }
             }
         }
 
