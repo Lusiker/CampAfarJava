@@ -46,7 +46,8 @@ export default {
     getPage() {
       this.loading = true
       let currentUid = this.loginState ? this.$store.getters.user.userId : 0
-      this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + this.$route.params.uid + "&page=" + this.currentPage)
+      let targetUid = this.$route.params.uid === undefined ? this.uid : this.$route.params.uid
+      this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + targetUid + "&page=" + this.currentPage)
           .then(
               (res) => {
                 switch (res.stateEnum.state) {
@@ -84,14 +85,15 @@ export default {
   mounted() {
     this.loading = true
     let currentUid = this.loginState ? this.$store.getters.user.userId : 0
-    this.$request.get('/user/userArticleCount?uid=' + this.$route.params.uid).then(
+    let targetUid = this.$route.params.uid === undefined ? this.uid : this.$route.params.uid
+    this.$request.get('/user/userArticleCount?uid=' + targetUid).then(
         (res) => {
           switch (res.stateEnum.state) {
             case 0: {
               //获取第一页
               this.totalItems = res.returnObject
               if(this.totalItems !== 0) {
-                this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + this.$route.params.uid + "&page=" + this.currentPage)
+                this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + targetUid + "&page=" + this.currentPage)
                     .then(
                         (res) => {
                           switch (res.stateEnum.state) {
