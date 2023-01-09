@@ -2,7 +2,7 @@
 <template>
   <v-container class="article-global">
     <div class="nav-box">
-      <img class="title-img" src="../assets/img/icon-back.png" alt="" @click="$router.go(-1)" />
+      <img class="title-img" src="../assets/img/icon-back.png" alt="" @click="$router.push('/knowledge')" />
       <div class="title">知识详情</div>
     </div>
     <div class="main-img">
