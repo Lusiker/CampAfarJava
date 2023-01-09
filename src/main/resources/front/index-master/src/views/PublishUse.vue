@@ -121,54 +121,62 @@ export default {
               case 0: {
                 Toast.success("文章信息发布成功")
                 let newAid = res.returnObject
-                let formData = new FormData();
-                formData.append("file", this.bannerList[0].file);
-                this.$request.post('/upload/articleBanner?uid=' + this.user.userId + "&aid=" + newAid, formData)
-                  .then(
-                      (res) => {
-                        switch (res.stateEnum.state) {
-                          case 0: {
-                            this.loading = false
-                            Toast.success("文章发布成功")
-                            this.$router.push("/article/" + newAid)
-                            return
-                          }
-                          case -1: {
-                            this.loading = false
 
-                            if(res.specificCode === 1) {
-                              Toast.fail("请求参数有误！")
-                              return
-                            } else if(res.specificCode === 2) {
-                              Toast.fail("用户不存在！")
-                              return
-                            } else if (res.specificCode === 3) {
-                              Toast.fail("文章不存在！")
-                              return
-                            } else {
-                              Toast.fail("未知错误！")
-                              return
+                if(this.bannerList.length !== 0) {
+                  let formData = new FormData();
+                  formData.append("file", this.bannerList[0].file);
+                  this.$request.post('/upload/articleBanner?uid=' + this.user.userId + "&aid=" + newAid, formData)
+                      .then(
+                          (res) => {
+                            switch (res.stateEnum.state) {
+                              case 0: {
+                                this.loading = false
+                                Toast.success("文章发布成功")
+                                this.$router.push("/article/" + newAid)
+                                return
+                              }
+                              case -1: {
+                                this.loading = false
+
+                                if(res.specificCode === 1) {
+                                  Toast.fail("请求参数有误！")
+                                  return
+                                } else if(res.specificCode === 2) {
+                                  Toast.fail("用户不存在！")
+                                  return
+                                } else if (res.specificCode === 3) {
+                                  Toast.fail("文章不存在！")
+                                  return
+                                } else {
+                                  Toast.fail("未知错误！")
+                                  return
+                                }
+                              }
+                              case -2: {
+                                this.loading = false
+                                Toast.fail("拒绝访问！")
+                                return
+                              }
+                              case 1: {
+                                this.loading = false
+                                Toast.fail("服务器出现错误！")
+                                break
+                              }
+                              default: {
+                                this.loading = false
+                                Toast.fail("文章Banner发布失败")
+                                return
+                              }
                             }
                           }
-                          case -2: {
-                            this.loading = false
-                            Toast.fail("拒绝访问！")
-                            return
-                          }
-                          case 1: {
-                            this.loading = false
-                            Toast.fail("服务器出现错误！")
-                            break
-                          }
-                          default: {
-                            this.loading = false
-                            Toast.fail("文章Banner发布失败")
-                            return
-                          }
-                        }
-                      }
-                  )
-                break
+                      )
+                  break
+                } else {
+                  this.loading = false
+                  Toast.success("文章发布成功")
+                  this.$router.push("/article/" + newAid)
+                  return
+                }
               }
               case -1: {
                 this.loading = false
