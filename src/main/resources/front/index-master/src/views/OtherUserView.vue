@@ -32,6 +32,12 @@
             <span>{{user.userIntroduction}}</span>
           </div>
         </div>
+        <div class="group-item">
+          <div class="name">上次登录</div>
+          <div class="value">
+            <span>{{user.lastLoginString}}</span>
+          </div>
+        </div>
         <div class="group-item" @click="showArticleList = !showArticleList">
           <div class="name">Ta的文章</div>
           <div class="value">
