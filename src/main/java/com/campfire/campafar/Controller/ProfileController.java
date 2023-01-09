@@ -1,4 +1,5 @@
 package com.campfire.campafar.Controller;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -28,6 +29,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
@@ -166,6 +168,7 @@ public class ProfileController {
             wrapper = new VisitorInfoWrapper.VisitorInfoWrapperBuilder()
                     .setUser(user)
                     .setUserCommonInfo()
+                    .setUserLoginInfo()
                     .setArticleCount()
                     .setFollowInfo()
                     .setUserQuestionInfo()
@@ -391,6 +394,40 @@ public class ProfileController {
 
         //激活码错误
         return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 4, null));
+    }
+
+    @RequestMapping("/charge")
+    public String userCharge(@RequestParam(value = "uid", defaultValue = "")String uidStr,
+                             @RequestParam(value = "value", defaultValue = "")String valueStr) throws JsonProcessingException {
+        Integer uid = InfoParser.parseInt(uidStr);
+        if (uid == null) {
+            //用户id无效
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
+        }
+
+        BigDecimal value;
+        try {
+            value = new BigDecimal(valueStr);
+        } catch (NumberFormatException e) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 1, null));
+        }
+
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
+            //不能充值非正数
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 3, null));
+        }
+
+        User user = userRepository.selectUserById(uid);
+        if (user == null || !user.getUserHasActivated() || user.getUserState() == UserStateEnum.LOGOFF) {
+            //目标用户不存在或无权限进行此操作
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.FAILED, 2, null));
+        }
+
+        if (!userRepository.charge(user, value)) {
+            return objectMapper.writeValueAsString(new RequestResult(CommonPageState.INTERNAL_ERROR, 1, null));
+        }
+
+        return objectMapper.writeValueAsString(new RequestResult(CommonPageState.SUCCESSFUL, 0, null));
     }
 }
 
