@@ -108,26 +108,34 @@
       },
       getPage() {
         this.loading = true
-        let url = '/articles?page=' + this.page
-        if(this.num === 1) {
-          url = url + '&free=true'
-        }
-        this.$request.get(url)
-            .then(
-                (res) => {
-                  switch (res.stateEnum.state) {
-                    case 0: {
-                      this.articles[this.page] = res.returnObject.records
-                      this.loading = false
-                      break
-                    }
-                    default: {
-                      Toast.fail("获取文章失败（页码：" + this.page + "）")
-                      break
-                    }
-                  }
-                }
-            )
+
+        this.$request.get('/articles/articleCount').then(
+            (res) => {
+              let count = res.returnObject
+              this.totalPage = count / 5 + (count % 5 === 0 ? 0 : 1)
+
+              let url = '/articles?page=' + this.page
+              if(this.num === 1) {
+                url = url + '&free=true'
+              }
+              this.$request.get(url)
+                  .then(
+                      (res) => {
+                        switch (res.stateEnum.state) {
+                          case 0: {
+                            this.articles[this.page] = res.returnObject.records
+                            this.loading = false
+                            break
+                          }
+                          default: {
+                            Toast.fail("获取文章失败（页码：" + this.page + "）")
+                            break
+                          }
+                        }
+                      }
+                  )
+            }
+        )
       },
       loadPageCount() {
         this.$request.get('/articles/articleCount').then(
