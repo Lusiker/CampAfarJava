@@ -1,18 +1,8 @@
-<!--  -->
-<head>
-<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-</head>
-
 <template>
   <div class="container">
-      <div class="top-box"><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      <div class="top-box"><div>
         <img src="../assets/img/营地.png" alt="" class="logo">
-        <div class="title">
-
-          远行营地</div>
+        <div class="title">远行营地</div>
         </div>
       <div calss="greyblank"></div>
 
@@ -318,8 +308,8 @@ export default {
   }
   .banner {
     width: 100%;
-    margin-top: 0;
-    padding: 0.2667rem 0.4rem;
+    margin-top: 5px;
+    //padding: 0.2667rem 0.4rem;
     height: 4.5rem;
     overflow: hidden;
     background: #fff;
@@ -333,9 +323,9 @@ export default {
   }
   .navs {
     display: flex;
-    padding: 0.133333rem;
+    //padding: 0.133333rem;
     background-color: white;
-    padding: 0.6667rem 0.4rem 0.5333rem 0.4rem;
+    //padding: 0.6667rem 0.4rem 0.5333rem 0.4rem;
     .navs-item {
       flex: 1;
       display: flex;
@@ -403,7 +393,7 @@ export default {
           font-weight: 500;
           color: #333;
           line-height: 0.3733rem;
-          text-align: center;
+          //text-align: center;
         }
 
         div.body {
@@ -441,8 +431,8 @@ export default {
         width: 1.3333rem;
         height: 1.3333rem;
         margin-right: 0.2667rem;
-        border-radius: 50%;
-        overflow: hidden;
+        //border-radius: 50%;
+        //overflow: hidden;
         img {
           width: 1.3333rem;
           height: 1.3333rem;
@@ -608,7 +598,7 @@ export default {
     padding-top: 1.3333rem;
     padding-bottom: 1.3333rem;
     text-align: center;
-    margin-bottom: 1.4133rem;
+margin-bottom: 1.4133rem;
     .inline-img {
       display: inline-block;
       img {
