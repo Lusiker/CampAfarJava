@@ -13,7 +13,7 @@
           </div>
         </van-col>
         <van-col class="article-info">
-          <h2>标题：{{item.articleTitle}}</h2>
+          <h2>标题：{{reducedTitle(item.articleTitle)}}</h2>
           <h4>发布于：{{getDateString(item.articleCreatedAt)}}</h4>
           <span>浏览量：{{item.articleViewCount}}</span>
           <div v-if="item.articleIsFree">
@@ -40,7 +40,15 @@ export default {
   methods: {
     toArticle() {
       this.$router.push('/article/' + this.item.articleId)
-    }
+    },
+    reducedTitle(title) {
+      if(title.length > 6){
+        let reduced = title.substring(0, 5)
+        return reduced + '...'
+      }
+
+      return title
+    },
   },
   mounted() {
     this.$request.get("/acquire/articleBanner?aid=" + this.item.articleId)
