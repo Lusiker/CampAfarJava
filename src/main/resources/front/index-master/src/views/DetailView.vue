@@ -145,7 +145,7 @@ export default {
                     case 0: {
                       Toast.success('订单创建成功')
 
-                      this.$router.push('/order/' + res.returnObject)
+                      this.$router.push('/order')
                       break
                     }
                     case 1: {
