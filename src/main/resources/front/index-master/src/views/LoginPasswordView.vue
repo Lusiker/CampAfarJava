@@ -133,33 +133,34 @@ export default {
 
               switch (res.stateEnum.state) {
                 case 0: {
-                  Toast.fail("登录成功！")
+                  Toast.success("登录成功！")
                   this.$store.dispatch('login', res.returnObject)
 
-                  switch (this.$store.getters.intercepted){
-                    case 'publish': {
-                      this.$router.push({
-                        path: '/publish',
-                        replace: true
-                      })
-                      this.$store.dispatch('resetIntercept')
-                      break
-                    }
-                    case 'users': {
-                      this.$router.push({
-                        path: '/users',
-                        replace: true
-                      })
-                      this.$store.dispatch('resetIntercept')
-                      break
-                    }
-                    default: {
-                      this.$router.push({
-                        path: '/member',
-                        replace: true
-                      })
-                      this.$store.dispatch('resetIntercept')
-                    }
+                  if(/article\/\d+/.test(this.$store.getters.intercepted )) {
+                    let arr = this.$store.getters.intercepted.split('/')
+                    this.$store.dispatch('resetIntercept')
+                    this.$router.push({
+                      path: '/article/' + arr[1],
+                      replace: true
+                    })
+                  } else if(this.$store.getters.intercepted === 'publish') {
+                    this.$store.dispatch('resetIntercept')
+                    this.$router.push({
+                      path: '/publish',
+                      replace: true
+                    })
+                  } else if(this.$store.getters.intercepted === 'users') {
+                    this.$store.dispatch('resetIntercept')
+                    this.$router.push({
+                      path: '/users',
+                      replace: true
+                    })
+                  } else {
+                    this.$store.dispatch('resetIntercept')
+                    this.$router.push({
+                      path: '/member',
+                      replace: true
+                    })
                   }
 
                   break
@@ -195,42 +196,35 @@ export default {
             .then((res) => {
               this.loading = false
               if(res.code === 1) {
-                Toast.fail("登录成功！")
+                Toast.success("登录成功！")
 
                 this.$store.dispatch('login', res.data)
 
-                switch (this.$store.getters.intercepted){
-                  case 'publish': {
-                    this.$router.push({
-                      path: '/publish',
-                      replace: true
-                    })
-                    this.$store.dispatch('resetIntercept')
-                    break
-                  }
-                  case 'users': {
-                    this.$router.push({
-                      path: '/users',
-                      replace: true
-                    })
-                    this.$store.dispatch('resetIntercept')
-                    break
-                  }
-                  case 'order': {
-                      this.$router.push({
-                        path: "/order",
-                        replace: true
-                      });
-                    this.$store.dispatch('resetIntercept')
-                    break
-                  }
-                  default: {
-                    this.$router.push({
-                      path: '/member',
-                      replace: true
-                    })
-                    this.$store.dispatch('resetIntercept')
-                  }
+                if(/article\/\d+/.test(this.$store.getters.intercepted)) {
+                  let arr = this.$store.getters.intercepted.split('/')
+                  this.$store.dispatch('resetIntercept')
+                  this.$router.push({
+                    path: '/article/' + arr[1],
+                    replace: true
+                  })
+                } else if(this.$store.getters.intercepted === 'publish') {
+                  this.$store.dispatch('resetIntercept')
+                  this.$router.push({
+                    path: '/publish',
+                    replace: true
+                  })
+                } else if(this.$store.getters.intercepted === 'users') {
+                  this.$store.dispatch('resetIntercept')
+                  this.$router.push({
+                    path: '/users',
+                    replace: true
+                  })
+                } else {
+                  this.$store.dispatch('resetIntercept')
+                  this.$router.push({
+                    path: '/member',
+                    replace: true
+                  })
                 }
               } else if(res.code === 0) {
                 if(res.msg === "登录失败") {
