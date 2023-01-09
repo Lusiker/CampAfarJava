@@ -38,7 +38,6 @@
       "kp-foot-nav": KPFootNav,
     },
     data() {
-      //这里存放数据
       return {
         filterState: 1,
         page: 1,
