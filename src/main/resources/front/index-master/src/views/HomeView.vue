@@ -16,6 +16,7 @@
       </van-swipe>
     </div>
 
+    
     <div class="blank">
       <KPBlank :height="blank.height" :bgcolor="blank.bgcolor"></KPBlank>
     </div>
