@@ -2,12 +2,14 @@ package com.campfire.campafar.DTO;
 
 
 import com.campfire.campafar.Entity.User;
+import com.campfire.campafar.Utils.DateProcessor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,6 +22,8 @@ public class VisitorInfoWrapper {
     private String userName;
     private String userEmail;
     private String userIntroduction;
+    private Date lastLogin;
+    private String lastLoginString;
     private Boolean userQuestionOpen;
     private BigDecimal userQuestionPrice;
     private Integer userArticleCount;
@@ -36,6 +40,8 @@ public class VisitorInfoWrapper {
         this.userArticleCount = builder.getBUserArticleCount();
         this.userFollowerCount = builder.getBUserFollowerCount();
         this.userFollowingCount = builder.getBUserFollowingCount();
+        this.lastLoginString = builder.getBLastLoginString();
+        this.lastLogin = builder.getBLastLogin();
     }
 
     @Getter
@@ -47,6 +53,8 @@ public class VisitorInfoWrapper {
         private String bUserName;
         private String bUserEmail;
         private String bUserIntroduction;
+        private Date bLastLogin;
+        private String bLastLoginString;
         private Boolean bUserQuestionOpen;
         private BigDecimal bUserQuestionPrice;
         private Integer bUserArticleCount;
@@ -63,6 +71,13 @@ public class VisitorInfoWrapper {
             this.bUserName = user.getUserName();
             this.bUserEmail = user.getUserEmail();
             this.bUserIntroduction = user.getUserIntroduction();
+
+            return this;
+        }
+
+        public VisitorInfoWrapperBuilder setUserLoginInfo() {
+            this.bLastLogin = this.user.getLastLogin();
+            this.bLastLoginString = DateProcessor.getLastLoginInfo(this.bLastLogin);
 
             return this;
         }
