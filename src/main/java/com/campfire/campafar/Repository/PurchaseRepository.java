@@ -8,11 +8,11 @@ import com.campfire.campafar.Enum.PurchaseStateEnum;
 import com.campfire.campafar.Enum.PurchaseTypeEnum;
 import com.campfire.campafar.Mapper.PurchaseMapper;
 import com.campfire.campafar.Mapper.UserMapper;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public class PurchaseRepository {
@@ -25,6 +25,32 @@ public class PurchaseRepository {
     //创建新的支付订单
     public boolean insertPurchase(Purchase purchase) {
         return purchaseMapper.insert(purchase) == 1;
+    }
+
+    public Purchase selectPurchaseByPid(int pid) {
+        QueryWrapper<Purchase> wrapper = new QueryWrapper<Purchase>().eq("purchase_id", pid);
+
+        return purchaseMapper.selectOne(wrapper);
+    }
+
+    public List<Purchase> selectPurchasesOfUid(int uid) {
+        QueryWrapper<Purchase> wrapper = new QueryWrapper<Purchase>().eq("user_id", uid);
+
+        List<Purchase> list = purchaseMapper.selectList(wrapper);
+        Date now = new Date();
+        for(Purchase p : list) {
+            if(now.getTime() - p.getPurchaseCreatedAt().getTime() > 10 * 60 * 1000) {
+                //订单已超时，无法支付
+                p.setPurchaseState(PurchaseStateEnum.TIMEOUT);
+                UpdateWrapper<Purchase> updateWrapper = new UpdateWrapper<Purchase>()
+                        .eq("purchase_id", p.getPurchaseId())
+                        .set("purchase_state", p.getPurchaseState());
+
+                purchaseMapper.update(null, updateWrapper);
+            }
+        }
+
+        return list;
     }
 
     public Purchase selectPurchaseByUidAndPurchaseInfo(int uid, PurchaseTypeEnum type, int tid) {
@@ -148,5 +174,12 @@ public class PurchaseRepository {
         }
 
         return result.getPurchaseState() == PurchaseStateEnum.FINISHED;
+    }
+
+    public boolean userCancelPurchase(int uid, Purchase purchase) {
+        purchase.setPurchaseState(PurchaseStateEnum.CANCELLED);
+        UpdateWrapper<Purchase> wrapper = new UpdateWrapper<Purchase>().eq("user_id", uid);
+
+        return purchaseMapper.update(purchase, wrapper) == 1;
     }
 }
