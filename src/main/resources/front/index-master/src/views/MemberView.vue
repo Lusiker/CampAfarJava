@@ -57,7 +57,7 @@
             </div>
           </div>
 
-          <div class="grid-item" @click="toMyArticle">
+          <div class="grid-item" @click="showArticleList = !showArticleList">
             <div class="icon">
               <div class="icon-img">
                 <img src="../assets/img/icon-list@2x.png" alt="" />
@@ -115,6 +115,14 @@
       </van-col>
     </van-action-sheet>
 
+    <van-action-sheet class="articles" v-model="showArticleList" title="我的文章">
+      <div v-if="loginState">
+        <ArticleList
+            :uid="user.userId"
+        />
+      </div>
+    </van-action-sheet>
+
     <kp-foot-nav type="member"></kp-foot-nav>
   </div>
 </template>
@@ -122,13 +130,16 @@
 <script>
 import KPFootNav from "@/components/kp-foot-nav.vue";
 import { Toast } from 'vant';
+import ArticleList from '@/components/ArticleList.vue';
 
 export default {
   components: {
     "kp-foot-nav": KPFootNav,
+    ArticleList
   },
   data() {
     return {
+      showArticleList: false,
       collapsed: true,
       avatarLoading: true,
       showChargeDrawer: false,

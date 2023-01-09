@@ -1,21 +1,26 @@
 <template>
-  <v-container>
-    <v-list>
-      <van-pagination
-          v-model="currentPage"
-          :total-items="totalItems"
-          :items-per-page="pageCapacity"
-          @change="getPage"
-      />
-      <div v-if="!loading">
-        <InfoCard
-            v-for="elem in articles[currentPage]"
-            :item="elem"
-            :key="elem.articleId"
-            :get-date-string="getDateString"
+  <v-container style="background-color: #f3f6f9">
+    <v-list style="background-color: #f3f6f9">
+      <div v-if="totalItems > 0">
+        <van-pagination
+            v-model="currentPage"
+            :total-items="totalItems"
+            :items-per-page="pageCapacity"
+            @change="getPage"
         />
+        <div v-if="!loading">
+            <InfoCard
+                v-for="elem in articles[currentPage]"
+                :item="elem"
+                :key="elem.articleId"
+                :get-date-string="getDateString"
+            />
+          </div>
+        <van-pagination v-model="currentPage" :total-items="totalItems" :items-per-page="pageCapacity" />
       </div>
-      <van-pagination v-model="currentPage" :total-items="totalItems" :items-per-page="pageCapacity" />
+      <div class="no-article" v-else>
+        <span style="font-size: 15px"><strong>暂无文章...</strong></span>
+      </div>
     </v-list>
   </v-container>
 </template>
@@ -85,23 +90,25 @@ export default {
             case 0: {
               //获取第一页
               this.totalItems = res.returnObject
-              this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + this.$route.params.uid + "&page=" + this.currentPage)
-                  .then(
-                      (res) => {
-                        switch(res.stateEnum.state) {
-                          case 0: {
-                            this.articles[1] = res.returnObject.records
-                            this.loading = false
+              if(this.totalItems !== 0) {
+                this.$request.get('/user/getArticles?uidFrom=' + currentUid + "&uidTo=" + this.$route.params.uid + "&page=" + this.currentPage)
+                    .then(
+                        (res) => {
+                          switch (res.stateEnum.state) {
+                            case 0: {
+                              this.articles[1] = res.returnObject.records
+                              this.loading = false
 
-                            break
-                          }
-                          default: {
-                            Toast.fail("获取文章失败（页码：1）")
-                            break
+                              break
+                            }
+                            default: {
+                              Toast.fail("获取文章失败（页码：1）")
+                              break
+                            }
                           }
                         }
-                      }
-                  )
+                    )
+              }
               break
             }
             default: {
@@ -115,5 +122,9 @@ export default {
 </script>
 
 <style scoped>
-
+  .no-article {
+    text-align: center;
+    width: 100%;
+    background-color: #f3f6f9;
+  }
 </style>

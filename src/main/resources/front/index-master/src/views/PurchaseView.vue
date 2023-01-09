@@ -6,7 +6,7 @@
         </div>
 
         <div class="blank">
-           
+
         </div>
 
         <div class="blank"> </div>
@@ -31,7 +31,7 @@
                         <div class="text-info-right" v-if="this.charge > 0">
                             <span class="charge"> ￥ </span>{{ this.charge }}
                         </div>
-                        <div class="free" v-else>
+                    <div class="free" v-else>
               <div style="color">免费</div>
             </div>
           </div>
@@ -45,7 +45,7 @@
         <div class="blank"> </div>
         <div class="blankgrey"></div>
         <div class="blankgrey"></div>
-        
+
         <div class="cost">
             <img src="../assets/img/钱.png" alt="" class="costimg">
             {{ "订单金额:    ￥" + this.charge}}
@@ -166,13 +166,13 @@ export default{
   .item {
     background-color: #f3f6f9;
     margin-bottom: 0.4rem;
-    
+
   .item-comp {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     .img {
-      
+
       width: 3.2rem;
       height: 2.4rem;
       margin-right: 0.2667rem;
