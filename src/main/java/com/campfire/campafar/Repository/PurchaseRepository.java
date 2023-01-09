@@ -77,7 +77,7 @@ public class PurchaseRepository {
         }
 
         //原先的同类订单存在
-        switch (purchase.getPurchaseState()) {
+        switch (prevPurchase.getPurchaseState()) {
             case FINISHED -> {
                 //已经支付过，无法再次创建
                 return -2;
