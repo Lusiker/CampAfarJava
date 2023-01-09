@@ -58,7 +58,8 @@ public class PurchaseRepository {
                 .eq("user_id", uid)
                 .and(w -> w.eq("target_type", type))
                 .and(w -> w.eq("target_id", tid))
-                .orderBy(true, false, "purchase_created_at");
+                .orderBy(true, false, "purchase_created_at")
+                .last("limit 1");
 
         return purchaseMapper.selectOne(wrapper);
     }
