@@ -70,14 +70,6 @@ const routes = [
     },
   },
   {
-    path: "/order/:pid",
-    name: "orderDetail",
-    component: () => import("../views/TrolleyView.vue"),
-    meta: {
-      title: "订单详情",
-    },
-  },
-  {
     path: "/purchase",
     name: "purchase",
     component: () => import("../views/PurchaseView.vue"),
