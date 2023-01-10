@@ -55,7 +55,7 @@
         <h3>浏览量:{{article.articleViewCount}}</h3>
       </v-card>
       <v-divider/>
-      <v-card width="100%" height="auto" style="padding: 5px;overflow-x: clip">
+      <v-card width="100%" :height="articleNotPurchased? '200px' : 'auto'" style="padding: 5px;overflow-x: clip">
 
         <div class="dialog-content">
           <div class="dialog" v-html="article.articleDetail"></div>
@@ -102,6 +102,13 @@ export default {
     };
   },
   computed: {
+    articleNotPurchased() {
+      if(!this.articleLoaded) {
+        return true
+      }
+
+      return this.notPurchased;
+    },
     createdAt() {
       if(this.article === {}) {
         return ''
