@@ -204,7 +204,7 @@ public class PurchaseRepository {
         }
 
         purchase.setPurchaseState(PurchaseStateEnum.CANCELLED);
-        UpdateWrapper<Purchase> wrapper = new UpdateWrapper<Purchase>().eq("user_id", uid);
+        UpdateWrapper<Purchase> wrapper = new UpdateWrapper<Purchase>().eq("purchase_id", purchase.getPurchaseId());
 
         if(purchaseMapper.update(purchase, wrapper) != 1){
             return -1;

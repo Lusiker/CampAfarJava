@@ -139,6 +139,12 @@ export default {
                       case 0: {
                         Toast.success("取消成功")
                         this.item.purchaseState = "CANCELLED"
+
+                        switch (this.item.targetType) {
+                          case "ARTICLE": {
+                            this.$router.push('/article/' + this.item.targetId)
+                          }
+                        }
                         return
                       }
                       case -1: {
